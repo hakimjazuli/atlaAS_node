@@ -1,6 +1,7 @@
 // @ts-check
 
 export class __AppSettings {
+	static _routes_class = '';
 	/**
 	 * @type {__AppSettings}
 	 */
