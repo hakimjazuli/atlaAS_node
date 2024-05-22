@@ -1,15 +1,15 @@
 // @ts-check
 
-export class __AppSettings {
+export class __Settings {
 	_default_port = 8080;
 	_default_debounce_ms = 30;
 
 	static _routes_class = '';
 	/**
-	 * @type {__AppSettings}
+	 * @type {__Settings}
 	 */
 	static __;
 	constructor() {
-		__AppSettings.__ = this;
+		__Settings.__ = this;
 	}
 }

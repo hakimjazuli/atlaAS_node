@@ -1,7 +1,7 @@
 // @ts-check
 
 import http from 'http';
-import { __AppSettings } from '../vars/__AppSettings.mjs';
+import { __Settings } from '../vars/__Settings.mjs';
 import { __Env } from '../vars/__Env.mjs';
 import { __QueueFIFO } from '../queue/__QueueFIFO.mjs';
 import { _QueueObjectFIFO } from '@html_first/simple_queue';
@@ -34,10 +34,10 @@ export class __NodeServer {
 	 * @param {http.ServerResponse} response
 	 */
 	request_handler = (request, response) => {
-		new __QueueFIFO.__.assign(
+		__QueueFIFO.__.assign(
 			new _QueueObjectFIFO(async () => {
 				await __FSRouter.__.run(request, response);
-			}, __AppSettings.__._default_debounce_ms)
+			}, __Settings.__._default_debounce_ms)
 		);
 	};
 	/**
@@ -55,13 +55,13 @@ export class __NodeServer {
 	 */
 	listen_to_port = () => {
 		try {
-			this.server.listen(__AppSettings.__._default_port);
+			this.server.listen(__Settings.__._default_port);
 		} catch (error) {
 			this.listen_to_random_port();
 		}
 	};
 	start_server = () => {
-		if (__AppSettings.__._default_port && !__Env.__._in_production) {
+		if (__Settings.__._default_port && !__Env.__._in_production) {
 			this.listen_to_port();
 		} else {
 			this.listen_to_random_port();

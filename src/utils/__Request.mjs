@@ -4,7 +4,7 @@ import http from 'http';
 
 export class __Request {
 	/**
-	 * @type {__Request}
+	 * @type {http.IncomingMessage}
 	 */
 	static __;
 	/**
@@ -12,10 +12,6 @@ export class __Request {
 	 * @param {http.IncomingMessage} request
 	 */
 	constructor(request) {
-		this.request = request;
+		__Request.__ = request;
 	}
-	/**
-	 * @type {http.IncomingMessage}
-	 */
-	request;
 }

@@ -4,7 +4,7 @@ import http from 'http';
 
 export class __Response {
 	/**
-	 * @type {__Response}
+	 * @type {http.ServerResponse}
 	 */
 	static __;
 	/**
@@ -12,10 +12,6 @@ export class __Response {
 	 * @param {http.ServerResponse} response
 	 */
 	constructor(response) {
-		this.response = response;
+		__Response.__ = response;
 	}
-	/**
-	 * @type {http.ServerResponse}
-	 */
-	response;
 }

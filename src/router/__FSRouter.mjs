@@ -19,16 +19,5 @@ export class __FSRouter {
 	run = async (request, response) => {
 		new __Request(request);
 		new __Response(response);
-		if (typeof request.url === 'undefined') {
-			return;
-		}
-		// this.parsed_url = url.parse(request.url, true);
-		// if (typeof this.parsed_url === 'undefined') {
-		// 	return;
-		// }
-		// if (this.parsed_url.pathname === '/') {
-		// 	this.parsed_url.pathname = 'index';
-		// }
-		// this.method = request.method?.toLowerCase() ?? 'get';
 	};
 }
