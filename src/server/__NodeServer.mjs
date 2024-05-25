@@ -1,6 +1,7 @@
 // @ts-check
 
 import http from 'http';
+import process from 'process';
 import { __Settings } from '../vars/__Settings.mjs';
 import { __Env } from '../vars/__Env.mjs';
 import { __QueueFIFO } from '../queue/__QueueFIFO.mjs';
@@ -11,8 +12,7 @@ export class __NodeServer {
 	/**
 	 * @type {__NodeServer}
 	 */
-	// @ts-ignore
-	static __ = null;
+	static __;
 	/**
 	 * @private
 	 * @type {import('http').Server}
@@ -27,7 +27,7 @@ export class __NodeServer {
 	 */
 	response;
 	constructor() {
-		if (__NodeServer.__ !== null) {
+		if (__NodeServer.__ !== undefined) {
 			return;
 		}
 		this.server = http.createServer(this.request_handler);
@@ -75,8 +75,18 @@ export class __NodeServer {
 			// @ts-ignore
 			console.log(`listen at: http://localhost:${addres.port}`);
 		}
+		process.on('exit', () => this.close_server());
+		process.on('beforeExit', () => this.close_server());
+		process.on('uncaughtException', () => this.close_server());
+		process.on('SIGINT', () => this.close_server());
 	};
+	is_running = true;
 	close_server = () => {
+		if (!this.is_running) {
+			return;
+		}
 		this.server.close();
+		this.is_running = false;
+		console.log('server closed');
 	};
 }

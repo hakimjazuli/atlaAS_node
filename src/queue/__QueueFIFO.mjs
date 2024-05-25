@@ -6,11 +6,10 @@ export class __QueueFIFO extends _QueueFIFO {
 	/**
 	 * @type {__QueueFIFO}
 	 */
-	// @ts-ignore
-	static __ = null;
+	static __;
 	constructor() {
 		super();
-		if (__QueueFIFO.__ !== null) {
+		if (__QueueFIFO.__ !== undefined) {
 			return;
 		}
 		__QueueFIFO.__ = this;

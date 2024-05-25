@@ -8,15 +8,14 @@ export class __atlaAS {
 	/**
 	 * @type {__atlaAS}
 	 */
-	// @ts-ignore
-	static __ = null;
+	static __;
 	/**
 	 * Description
 	 * @param {typeof import('./vars/__Settings.mjs').__Settings} __settings
 	 * @param {typeof import('./vars/__Env.mjs').__Env} __env
 	 */
 	constructor(__settings, __env) {
-		if (__atlaAS.__ !== null) {
+		if (__atlaAS.__ !== undefined) {
 			return;
 		}
 		new __settings();

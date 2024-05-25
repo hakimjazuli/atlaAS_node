@@ -6,10 +6,9 @@ export class __Env {
 	/**
 	 * @type {__Env}
 	 */
-	// @ts-ignore
-	static __ = null;
+	static __;
 	constructor() {
-		if (__Env.__ !== null) {
+		if (__Env.__ !== undefined) {
 			return;
 		}
 		__Env.__ = this;

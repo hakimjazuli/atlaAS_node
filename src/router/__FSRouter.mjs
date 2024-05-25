@@ -1,6 +1,5 @@
 // @ts-check
 
-import http from 'http';
 import { __Request } from '../utils/__Request.mjs';
 import { __Response } from '../utils/__Response.mjs';
 
@@ -8,17 +7,16 @@ export class __FSRouter {
 	/**
 	 * @type {__FSRouter}
 	 */
-	// @ts-ignore
-	static __ = null;
+	static __;
 	constructor() {
-		if (__FSRouter.__ !== null) {
+		if (__FSRouter.__ !== undefined) {
 			return;
 		}
 		__FSRouter.__ = this;
 	}
 	/**
-	 * @param {http.IncomingMessage} request
-	 * @param {http.ServerResponse} response
+	 * @param {import('http').IncomingMessage} request
+	 * @param {import('http').ServerResponse} response
 	 */
 	run = async (request, response) => {
 		new __Request(request);
