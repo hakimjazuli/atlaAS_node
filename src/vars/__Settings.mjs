@@ -8,8 +8,12 @@ export class __Settings {
 	/**
 	 * @type {__Settings}
 	 */
+	// @ts-ignore
 	static __;
 	constructor() {
+		if (__Settings.__ !== null) {
+			return;
+		}
 		__Settings.__ = this;
 	}
 }

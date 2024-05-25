@@ -8,8 +8,12 @@ export class __FSRouter {
 	/**
 	 * @type {__FSRouter}
 	 */
-	static __;
+	// @ts-ignore
+	static __ = null;
 	constructor() {
+		if (__FSRouter.__ !== null) {
+			return;
+		}
 		__FSRouter.__ = this;
 	}
 	/**

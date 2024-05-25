@@ -6,12 +6,16 @@ export class __Request {
 	/**
 	 * @type {http.IncomingMessage}
 	 */
-	static __;
+	// @ts-ignore
+	static __ = null;
 	/**
 	 *
 	 * @param {http.IncomingMessage} request
 	 */
 	constructor(request) {
+		if (__Request.__ !== null) {
+			return;
+		}
 		__Request.__ = request;
 	}
 }

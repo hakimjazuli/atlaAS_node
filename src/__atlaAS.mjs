@@ -8,13 +8,17 @@ export class __atlaAS {
 	/**
 	 * @type {__atlaAS}
 	 */
-	static __;
+	// @ts-ignore
+	static __ = null;
 	/**
 	 * Description
 	 * @param {typeof import('./vars/__Settings.mjs').__Settings} __settings
 	 * @param {typeof import('./vars/__Env.mjs').__Env} __env
 	 */
 	constructor(__settings, __env) {
+		if (__atlaAS.__ !== null) {
+			return;
+		}
 		new __settings();
 		new __env();
 		new __FSRouter();

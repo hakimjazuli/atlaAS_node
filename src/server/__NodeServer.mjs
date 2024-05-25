@@ -11,7 +11,8 @@ export class __NodeServer {
 	/**
 	 * @type {__NodeServer}
 	 */
-	static __;
+	// @ts-ignore
+	static __ = null;
 	/**
 	 * @private
 	 * @type {import('http').Server}
@@ -26,6 +27,9 @@ export class __NodeServer {
 	 */
 	response;
 	constructor() {
+		if (__NodeServer.__ !== null) {
+			return;
+		}
 		this.server = http.createServer(this.request_handler);
 		__NodeServer.__ = this;
 	}
