@@ -7,5 +7,5 @@ export class _RouteWithMiddleware extends _Routes {
 	/**
 	 * @param {string} method
 	 */
-	mw = (method) => {};
+	mw = async (method) => {};
 }

@@ -102,32 +102,37 @@ export class FSRouter extends FSMiddleware {
 		}
 		if (route_instance instanceof _Routes) {
 			__atlaAS.__.assign_query_param_to_class_property(route_instance);
-			if (this.check_is_map_resources(route, route_instance)) {
+			if (await this.check_is_map_resources(route, route_instance)) {
 				return;
 			}
-			this.run_method_with_input_logic(route_instance);
+			await this.run_method_with_input_logic(route_instance);
 		}
 	};
 	/**
 	 * @private
 	 * @param {_Routes} route_instance
 	 */
-	run_method_with_input_logic = (route_instance) => {
+	run_method_with_input_logic = async (route_instance) => {
 		const num_params = _FunctionHelpers.url_input_length(route_instance);
 		if (num_params !== this.request_length - this.routes_length) {
 			__atlaAS.__.reroute_error(404);
 			return;
 		}
 		const url_inputs = __Request.__.uri_array.slice(-num_params);
-		route_instance[__Request.__.method](...url_inputs);
+		const result = await route_instance[__Request.__.method](...url_inputs);
+		if (result && route_instance.is_real_route) {
+			__Response.__.response.end(result);
+			return;
+		}
+		__Response.__.response.write(result);
 	};
 	/**
 	 * @private
 	 * @param {string} route_full_path
 	 * @param {_Routes} route_instance
-	 * @returns {boolean}
+	 * @returns {Promise<boolean>}
 	 */
-	check_is_map_resources = (route_full_path, route_instance) => {
+	check_is_map_resources = async (route_full_path, route_instance) => {
 		if (route_instance instanceof _MapResources && __Request.__.method === 'get') {
 			const url_input = __Request.__.uri_array.slice(this.routes_length);
 			if (url_input.length === 0) {
@@ -138,7 +143,7 @@ export class FSRouter extends FSMiddleware {
 					route_instance.get();
 				}
 			} else {
-				route_instance.map_resources(...url_input);
+				await route_instance.map_resources(...url_input);
 				_FileServer.serves(url_input, route_full_path);
 			}
 			return true;

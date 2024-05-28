@@ -6,5 +6,5 @@ export class _RouteWithMapResourcesAndMiddleware extends _RouteWithMapResources 
 	/**
 	 * @param {string} method
 	 */
-	mw = (method) => {};
+	mw = async (method) => {};
 }
