@@ -15,4 +15,12 @@ export class __Response {
 		}
 		__Response.__ = response;
 	}
+	html = () => {
+		__Response.__.setHeader('Content-Type', 'text/html; charset=UTF-8');
+		return __Response.__;
+	};
+	json = () => {
+		__Response.__.setHeader('Content-Type', 'application/json');
+		return __Response.__;
+	};
 }

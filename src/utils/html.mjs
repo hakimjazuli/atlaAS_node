@@ -1,9 +1,12 @@
 // @ts-check
+
+import { htmlReturn } from './htmlReturn.mjs';
+
 /**
  * Description
  * @param {TemplateStringsArray} strings
  * @param {string[]} values
- * @returns {Promise<string>}
+ * @returns {Promise<htmlReturn>}
  */
 export const html = async (strings, ...values) => {
 	let result = '';
@@ -13,5 +16,5 @@ export const html = async (strings, ...values) => {
 			result += values[i];
 		}
 	}
-	return result;
+	return new htmlReturn(result);
 };

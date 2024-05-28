@@ -7,7 +7,7 @@ export class __Settings {
 	_default_debounce_ms = 0;
 
 	_routes_path = 'routes';
-
+	_public_path = 'public';
 	/**
 	 * @type {string}
 	 */

@@ -1,5 +1,9 @@
 // @ts-check
 
+import path from 'path';
+import { __Settings } from '../vars/__Settings.mjs';
+import { TLSSocket } from 'tls';
+
 export class __Request {
 	/**
 	 * @type {__Request}
@@ -8,7 +12,7 @@ export class __Request {
 	/**
 	 * @type {import('http').IncomingMessage}
 	 */
-	static request;
+	request;
 	/**
 	 *
 	 * @param {import('http').IncomingMessage} request
@@ -18,13 +22,51 @@ export class __Request {
 			return;
 		}
 		__Request.__ = this;
-		__Request.request = request;
+		this.request = request;
 		if ((this.is_https = this.assign_http())) {
 			this.http_mode = 'https';
 		} else {
 			this.http_mode = 'http';
 		}
+		if (!request.url || !request.method) {
+			return;
+		}
+		const settings = __Settings.__;
+		this.public_path = path.join(settings.app_root, settings._public_path);
+		this.method = request.method;
+		const request_uri = request.url.split('?');
+		this.set_uri();
+		this.uri = request_uri[0].replace(/^\/+|\/+$/g, '');
+		if (request_uri.length > 1) {
+			this.query_param = request_uri[1];
+			const parsed_url = new URL(request.url, `${this.http_mode}://${request.headers.host}`);
+			this.query_params_arrray = Object.fromEntries(parsed_url.searchParams);
+		}
 	}
+	/**
+	 * @type {string[]}
+	 */
+	uri_array;
+	/**
+	 * @type {string}
+	 */
+	public_path;
+	/**
+	 * @type {Object.<string, string>}
+	 */
+	query_params_arrray = {};
+	/**
+	 * @type {string}
+	 */
+	uri;
+	/**
+	 * @type {string}
+	 */
+	query_param;
+	/**
+	 * @type {string}
+	 */
+	method;
 	/**
 	 * @type {boolean}
 	 */
@@ -37,6 +79,36 @@ export class __Request {
 	 * @private
 	 */
 	assign_http = () => {
-		return true;
+		return this.request.socket instanceof TLSSocket && this.request.socket.encrypted;
+	};
+	/**
+	 * @private
+	 */
+	set_uri = () => {
+		const uri = this.uri.split('/');
+		if (uri.length !== 1) {
+			this.uri_array = uri;
+			return;
+		}
+		if (uri[0] === '') {
+			uri[0] = 'index';
+		} else if (uri[0].includes('.')) {
+			uri[1] = uri[0];
+			uri[0] = 'index';
+		}
+		this.uri_array = uri;
+	};
+	method_params = () => {
+		switch (this.method) {
+			case 'get':
+				return this.query_params_arrray;
+			default:
+				let body = '';
+				this.request.on('data', (chunk) => {
+					body += chunk.toString();
+				});
+				const post_params = new URLSearchParams(body);
+				return Object.fromEntries(post_params);
+		}
 	};
 }
