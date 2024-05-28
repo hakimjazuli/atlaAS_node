@@ -6,6 +6,10 @@ import { FSMiddleware } from '../middlewares/FSMiddleware.mjs';
 import { __Request } from '../utils/__Request.mjs';
 import { __Response } from '../utils/__Response.mjs';
 import { __Settings } from '../vars/__Settings.mjs';
+import { __atlaAS } from '../__atlaAS.mjs';
+import { _FunctionHelpers } from '../utils/_FunctionHelpers.mjs';
+import { _RouteWithMiddleware } from './_RouteWithMiddleware.mjs';
+import { _Routes } from './_Routes.mjs';
 
 export class __FSRouter extends FSMiddleware {
 	/**
@@ -26,7 +30,7 @@ export class __FSRouter extends FSMiddleware {
 	run = async (request, response) => {
 		new __Request(request);
 		new __Response(response);
-		this.render();
+		await this.render();
 	};
 	/**
 	 * @private
@@ -47,7 +51,7 @@ export class __FSRouter extends FSMiddleware {
 	 * @private
 	 * @param {boolean} is_real_route
 	 */
-	render = (is_real_route = true) => {
+	render = async (is_real_route = true) => {
 		const __setting = __Settings.__;
 		const uri_array = __Request.__.uri_array;
 		this.request_length = uri_array.length;
@@ -67,10 +71,10 @@ export class __FSRouter extends FSMiddleware {
 			}
 		}
 		if (!this.real_route) {
-			//     __atlaAS::reroute_error(404);
+			__atlaAS.__.reroute_error(404);
 			return;
 		}
-		// $this->run_real_route($is_real_route);
+		await this.run_real_route(is_real_route);
 	};
 	/**
 	 * @private
@@ -88,4 +92,43 @@ export class __FSRouter extends FSMiddleware {
 			return false;
 		}
 	};
+	/**
+	 * @private
+	 * @param {boolean} is_real_route
+	 */
+	run_real_route = async (is_real_route) => {
+		const route = this.real_route;
+		const route_ref = await _FunctionHelpers.dynamic_import(route);
+		const route_instance = new route_ref(is_real_route);
+		if (route_instance instanceof _RouteWithMiddleware) {
+			__atlaAS.__.assign_query_param_to_class_property(route_instance);
+			route_instance.mw(__Request.__.method);
+		}
+		if (route_instance instanceof _Routes) {
+			__atlaAS.__.assign_query_param_to_class_property(route_instance);
+			//         if ($this->check_is_map_resources($route, $route_ref)) {
+			//             return;
+			//         }
+			this.run_method_with_input_logic(route_instance);
+		}
+	};
+	/**
+	 * @private
+	 * @param {_Routes} route_instance
+	 */
+	run_method_with_input_logic = (route_instance) => {
+		const num_params = _FunctionHelpers.url_input_length(route_instance);
+	};
+	// private function run_method_with_input_logic(string $class_name, object $route_ref): void {
+	//     $num_params = _FunctionHelpers::url_input_length(
+	//         $class_name,
+	//         $method = __Request::$method
+	//     );
+	//     if ($num_params !== $this->request_length - $this->routes_length) {
+	//         __atlaAS::reroute_error(404);
+	//         return;
+	//     }
+	//     $url_inputs = \array_slice(__Request::$uri_array, -$num_params);
+	//     $route_ref->$method(...$url_inputs);
+	// }
 }

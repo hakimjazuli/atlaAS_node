@@ -50,7 +50,7 @@ export class __Request {
 	 * @param {import('http').IncomingMessage} request
 	 */
 	constructor(request) {
-		if (__Request.__ !== undefined) {
+		if (__Request.__ !== undefined || !request.url || !request.method) {
 			return;
 		}
 		__Request.__ = this;
@@ -59,9 +59,6 @@ export class __Request {
 			this.http_mode = 'https';
 		} else {
 			this.http_mode = 'http';
-		}
-		if (!request.url || !request.method) {
-			return;
 		}
 		const settings = __Settings.__;
 		this.public_path = path_join(settings.app_root, settings._public_path);
