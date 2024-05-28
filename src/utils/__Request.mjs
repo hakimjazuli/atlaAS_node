@@ -3,6 +3,7 @@
 import { join as path_join } from 'path';
 import { __Settings } from '../vars/__Settings.mjs';
 import { TLSSocket } from 'tls';
+import { __atlaAS } from '../__atlaAS.mjs';
 
 export class __Request {
 	/**
@@ -60,8 +61,7 @@ export class __Request {
 		} else {
 			this.http_mode = 'http';
 		}
-		const settings = __Settings.__;
-		this.public_path = path_join(settings.app_root, settings._public_path);
+		this.public_path = path_join(__atlaAS.__.app_root, __Settings.__._public_path);
 		this.method = request.method.toLowerCase();
 		const request_uri = request.url.split('?');
 		this.uri = request_uri[0].replace(/^\/+|\/+$/g, '');

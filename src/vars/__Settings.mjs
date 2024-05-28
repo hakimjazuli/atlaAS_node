@@ -1,6 +1,5 @@
 // @ts-check
 
-import process from 'process';
 import { __Env } from './__Env.mjs';
 
 export class __Settings {
@@ -35,10 +34,6 @@ export class __Settings {
 		return __Env.__._in_production ? in_production_value : not_in_production_value;
 	};
 	/**
-	 * @type {string}
-	 */
-	app_root;
-	/**
 	 * @type {__Settings}
 	 */
 	static __;
@@ -46,7 +41,6 @@ export class __Settings {
 		if (__Settings.__ !== undefined) {
 			return;
 		}
-		this.app_root = process.cwd();
 		__Settings.__ = this;
 	}
 }

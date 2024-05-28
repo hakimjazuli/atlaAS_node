@@ -14,6 +14,10 @@ export class __atlaAS {
 	 */
 	static __;
 	/**
+	 * @type {string}
+	 */
+	app_root;
+	/**
 	 * Description
 	 * @param {typeof import('./vars/__Settings.mjs').__Settings} __settings
 	 * @param {typeof import('./vars/__Env.mjs').__Env} __env
@@ -22,6 +26,7 @@ export class __atlaAS {
 		if (__atlaAS.__ !== undefined) {
 			return;
 		}
+		this.app_root = process.cwd();
 		new __settings();
 		new __env();
 		new __QueueFIFO();

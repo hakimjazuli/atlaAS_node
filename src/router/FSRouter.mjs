@@ -45,7 +45,7 @@ export class FSRouter extends FSMiddleware {
 		const __setting = __Settings.__;
 		const uri_array = __Request.__.uri_array;
 		this.request_length = uri_array.length;
-		this.current_route = path_join(__setting.app_root, __setting._routes_path);
+		this.current_route = path_join(__atlaAS.__.app_root, __setting._routes_path);
 		let routes_length = 0;
 		const middleware_name = __setting.middleware_name();
 		for (let i = 0; i < uri_array.length; i++) {

@@ -16,15 +16,15 @@ export class _FileServer {
 	 * @returns {void}
 	 */
 	static serves = (relative_path, system_dir, force_download = false) => {
-		const __settings = __Settings.__;
-		const file = path_join(__settings.app_root, system_dir, ...relative_path);
+		const atlaAS = __atlaAS.__;
+		const file = path_join(atlaAS.app_root, system_dir, ...relative_path);
 		const resource = _FileServer.page_resource_handler(file, force_download);
 		switch (resource) {
 			case 'is_resource_file':
 				break;
 			case 'is_system_file':
 			case 'not_found':
-				__atlaAS.__.reroute_error(404);
+				atlaAS.reroute_error(404);
 				break;
 		}
 	};
