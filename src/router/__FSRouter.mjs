@@ -118,17 +118,11 @@ export class __FSRouter extends FSMiddleware {
 	 */
 	run_method_with_input_logic = (route_instance) => {
 		const num_params = _FunctionHelpers.url_input_length(route_instance);
+		//     if ($num_params !== $this->request_length - $this->routes_length) {
+		//         __atlaAS::reroute_error(404);
+		//         return;
+		//     }
+		//     $url_inputs = \array_slice(__Request::$uri_array, -$num_params);
+		//     $route_ref->$method(...$url_inputs);
 	};
-	// private function run_method_with_input_logic(string $class_name, object $route_ref): void {
-	//     $num_params = _FunctionHelpers::url_input_length(
-	//         $class_name,
-	//         $method = __Request::$method
-	//     );
-	//     if ($num_params !== $this->request_length - $this->routes_length) {
-	//         __atlaAS::reroute_error(404);
-	//         return;
-	//     }
-	//     $url_inputs = \array_slice(__Request::$uri_array, -$num_params);
-	//     $route_ref->$method(...$url_inputs);
-	// }
 }
