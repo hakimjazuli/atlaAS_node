@@ -1,27 +1,28 @@
 {
-  "name": "@html_first/atla-as_node",
-  "version": "0.0.1",
-  "description": "atlaAS FS Routing library port for node server",
-  "main": "index.mjs",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hakimjazuli/atlaAS_node.git"
-  },
-  "keywords": [
-    "FSRouting",
-    "node"
-  ],
-  "author": "hakim_jazuli",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/hakimjazuli/atlaAS_node/issues"
-  },
-  "homepage": "https://github.com/hakimjazuli/atlaAS_node#readme",
-  "dependencies": {
-    "@html_first/simple_queue": "^1.2.0",
-    "he": "^1.2.0"
-  }
+	"name": "@html_first/atla-as_node",
+	"version": "0.0.1",
+	"description": "atlaAS FS Routing library port for node server",
+	"main": "index.mjs",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/hakimjazuli/atlaAS_node.git"
+	},
+	"keywords": [
+		"atlaAS",
+		"FSRouting",
+		"node"
+	],
+	"author": "hakim_jazuli",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/hakimjazuli/atlaAS_node/issues"
+	},
+	"homepage": "https://github.com/hakimjazuli/atlaAS_node#readme",
+	"dependencies": {
+		"@html_first/simple_queue": "^1.2.0",
+		"he": "^1.2.0"
+	}
 }
