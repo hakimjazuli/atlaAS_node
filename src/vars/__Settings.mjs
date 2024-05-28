@@ -8,6 +8,16 @@ export class __Settings {
 
 	_routes_path = 'routes';
 	_public_path = 'public';
+	_system_file = ['mjs'];
+	_client_reroute_key = 'reroute';
+	_routes_errors_prefix = '/errors/';
+
+	/**
+	 * @private
+	 * @readonly
+	 */
+	middleware_name_ = 'mw';
+	middleware_name = () => this.middleware_name_;
 	/**
 	 * @type {string}
 	 */

@@ -2,9 +2,13 @@
 
 export class __Response {
 	/**
-	 * @type {import('http').ServerResponse}
+	 * @type {__Response}
 	 */
 	static __;
+	/**
+	 * @type {import('http').ServerResponse}
+	 */
+	response;
 	/**
 	 *
 	 * @param {import('http').ServerResponse} response
@@ -13,14 +17,22 @@ export class __Response {
 		if (__Response.__ !== undefined) {
 			return;
 		}
-		__Response.__ = response;
+		this.response = response;
 	}
+	/**
+	 * Description
+	 * @returns {__Response}
+	 */
 	html = () => {
-		__Response.__.setHeader('Content-Type', 'text/html; charset=UTF-8');
+		this.response.setHeader('Content-Type', 'text/html; charset=UTF-8');
 		return __Response.__;
 	};
+	/**
+	 * Description
+	 * @returns {__Response}
+	 */
 	json = () => {
-		__Response.__.setHeader('Content-Type', 'application/json');
+		this.response.setHeader('Content-Type', 'application/json');
 		return __Response.__;
 	};
 }

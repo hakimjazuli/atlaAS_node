@@ -1,6 +1,6 @@
 // @ts-check
 
-import path from 'path';
+import { join as path_join } from 'path';
 import { __Settings } from '../vars/__Settings.mjs';
 import { TLSSocket } from 'tls';
 
@@ -13,36 +13,6 @@ export class __Request {
 	 * @type {import('http').IncomingMessage}
 	 */
 	request;
-	/**
-	 *
-	 * @param {import('http').IncomingMessage} request
-	 */
-	constructor(request) {
-		if (__Request.__ !== undefined) {
-			return;
-		}
-		__Request.__ = this;
-		this.request = request;
-		if ((this.is_https = this.assign_http())) {
-			this.http_mode = 'https';
-		} else {
-			this.http_mode = 'http';
-		}
-		if (!request.url || !request.method) {
-			return;
-		}
-		const settings = __Settings.__;
-		this.public_path = path.join(settings.app_root, settings._public_path);
-		this.method = request.method;
-		const request_uri = request.url.split('?');
-		this.set_uri();
-		this.uri = request_uri[0].replace(/^\/+|\/+$/g, '');
-		if (request_uri.length > 1) {
-			this.query_param = request_uri[1];
-			const parsed_url = new URL(request.url, `${this.http_mode}://${request.headers.host}`);
-			this.query_params_arrray = Object.fromEntries(parsed_url.searchParams);
-		}
-	}
 	/**
 	 * @type {string[]}
 	 */
@@ -75,6 +45,36 @@ export class __Request {
 	 * @type {'http'|'https'}
 	 */
 	http_mode;
+	/**
+	 *
+	 * @param {import('http').IncomingMessage} request
+	 */
+	constructor(request) {
+		if (__Request.__ !== undefined) {
+			return;
+		}
+		__Request.__ = this;
+		this.request = request;
+		if ((this.is_https = this.assign_http())) {
+			this.http_mode = 'https';
+		} else {
+			this.http_mode = 'http';
+		}
+		if (!request.url || !request.method) {
+			return;
+		}
+		const settings = __Settings.__;
+		this.public_path = path_join(settings.app_root, settings._public_path);
+		this.method = request.method.toLowerCase();
+		const request_uri = request.url.split('?');
+		this.uri = request_uri[0].replace(/^\/+|\/+$/g, '');
+		this.set_uri();
+		if (request_uri.length > 1) {
+			this.query_param = request_uri[1];
+			const parsed_url = new URL(request.url, `${this.http_mode}://${request.headers.host}`);
+			this.query_params_arrray = Object.fromEntries(parsed_url.searchParams);
+		}
+	}
 	/**
 	 * @private
 	 */

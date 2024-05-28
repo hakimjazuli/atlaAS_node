@@ -65,10 +65,10 @@ export class __NodeServer {
 		}
 	};
 	start_server = () => {
-		if (__Settings.__._default_port && !__Env.__._in_production) {
-			this.listen_to_port();
-		} else {
+		if (__Env.__._in_production) {
 			this.listen_to_random_port();
+		} else {
+			this.listen_to_port();
 		}
 		const addres = this.server.address();
 		if (addres) {

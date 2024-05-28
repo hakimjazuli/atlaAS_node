@@ -18,11 +18,11 @@ export class _AppRegex {
 
 	/**
 	 * Generate a regular expression pattern for matching HTML tags with the given tag name.
-	 * @param {string} tagName - The name of the HTML tag to match.
+	 * @param {string} tag_name - The name of the HTML tag to match.
 	 * @returns {RegExp} A regular expression pattern for matching the specified HTML tag.
 	 */
-	static tag(tagName) {
-		return new RegExp(`<${tagName}(.*?)>|<\\/${tagName}>`, 'gm');
+	static tag(tag_name) {
+		return new RegExp(`<${tag_name}(.*?)>|<\\/${tag_name}>`, 'gm');
 	}
 	/**
 	 * Generate a regular expression pattern for matching alphanumeric characters with a loose constraint on length.
@@ -55,11 +55,11 @@ export class _AppRegex {
 	static regex_non_alphanumeric = /[^a-zA-Z0-9_]+/;
 	/**
 	 * Generate a regular expression pattern for matching enum values.
-	 * @param {...string} allowedValues - An array of allowed enum values.
+	 * @param {...string} allowed_values - An array of allowed enum values.
 	 * @returns {RegExp} A regular expression pattern for matching enum values.
 	 */
-	static regex_enum(...allowedValues) {
-		const escapedValues = allowedValues.map((value) =>
+	static regex_enum(...allowed_values) {
+		const escapedValues = allowed_values.map((value) =>
 			value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 		);
 		const pattern = `^(${escapedValues.join('|')})$`;
