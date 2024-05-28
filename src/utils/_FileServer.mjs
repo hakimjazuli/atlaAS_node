@@ -1,6 +1,5 @@
 // @ts-check
 
-import mime from 'mime';
 import { statSync, createReadStream } from 'fs';
 import { join as path_join, extname, basename } from 'path';
 import { __Settings } from '../vars/__Settings.mjs';
