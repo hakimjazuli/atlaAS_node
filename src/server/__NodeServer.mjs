@@ -7,6 +7,8 @@ import { __Env } from '../vars/__Env.mjs';
 import { __QueueFIFO } from '../queue/__QueueFIFO.mjs';
 import { _QueueObjectFIFO } from '@html_first/simple_queue';
 import { FSRouter } from '../router/FSRouter.mjs';
+import { __Response } from '../utils/__Response.mjs';
+import { __Request } from '../utils/__Request.mjs';
 
 export class __NodeServer {
 	/**
@@ -40,7 +42,9 @@ export class __NodeServer {
 	request_handler = (request, response) => {
 		__QueueFIFO.__.assign(
 			new _QueueObjectFIFO(async () => {
-				const fs_router = new FSRouter(request, response);
+				new __Request(request);
+				new __Response(response);
+				const fs_router = new FSRouter();
 				await fs_router.run();
 			}, __Settings.__._default_debounce_ms)
 		);
@@ -77,8 +81,8 @@ export class __NodeServer {
 			console.log(`listen at: http://localhost:${addres.port}`);
 		}
 		process.on('exit', () => this.close_server());
-		process.on('beforeExit', () => this.close_server());
-		process.on('uncaughtException', () => this.close_server());
+		// process.on('beforeExit', () => this.close_server());
+		// process.on('uncaughtException', () => this.close_server());
 		process.on('SIGINT', () => this.close_server());
 	};
 	is_running = true;

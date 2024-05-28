@@ -14,10 +14,8 @@ export class __Response {
 	 * @param {import('http').ServerResponse} response
 	 */
 	constructor(response) {
-		if (__Response.__ !== undefined) {
-			return;
-		}
 		this.response = response;
+		__Response.__ = this;
 	}
 	/**
 	 * Description

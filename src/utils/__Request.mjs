@@ -50,7 +50,7 @@ export class __Request {
 	 * @param {import('http').IncomingMessage} request
 	 */
 	constructor(request) {
-		if (__Request.__ !== undefined || !request.url || !request.method) {
+		if (!request.url || !request.method) {
 			return;
 		}
 		__Request.__ = this;

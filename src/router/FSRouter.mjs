@@ -16,14 +16,8 @@ import { _RouteWithMapResources } from './_RouteWithMapResources.mjs';
 import { _FileServer } from '../utils/_FileServer.mjs';
 
 export class FSRouter extends FSMiddleware {
-	/**
-	 * @param {import('http').IncomingMessage} request
-	 * @param {import('http').ServerResponse} response
-	 */
-	constructor(request, response) {
+	constructor() {
 		super();
-		new __Request(request);
-		new __Response(response);
 	}
 	run = async () => {
 		await this.render();
@@ -78,7 +72,7 @@ export class FSRouter extends FSMiddleware {
 	 */
 	check_route = () => {
 		try {
-			const stats = stat_sync(this.current_middleware);
+			const stats = stat_sync(`${this.current_route}.mjs`);
 			if (!stats.isFile()) {
 				return false;
 			}
