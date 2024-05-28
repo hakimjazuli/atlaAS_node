@@ -30,8 +30,13 @@ export class _FunctionHelpers {
 	static url_input_length = (class_instance) => {
 		return class_instance[__Request.__.method].length;
 	};
-	// public static function url_input_length(string $class_name, string $method_name): int {
-	//     $reflection = new ReflectionMethod($class_name, $method_name);
-	//     return $reflection->getNumberOfParameters();
-	// }
+	/**
+	 * @param {string[][]} strings
+	 * @returns {string[]}
+	 */
+	static merge_unique_1d_array = (...strings) => {
+		const mergedArray = strings.reduce((result, arr) => result.concat(arr), []);
+		const uniqueArray = [...new Set(mergedArray)];
+		return uniqueArray;
+	};
 }

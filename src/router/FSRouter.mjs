@@ -10,26 +10,22 @@ import { __atlaAS } from '../__atlaAS.mjs';
 import { _FunctionHelpers } from '../utils/_FunctionHelpers.mjs';
 import { _RouteWithMiddleware } from './_RouteWithMiddleware.mjs';
 import { _Routes } from './_Routes.mjs';
+import { _MapResources } from './_MapResources.mjs';
+import { _RouteWithMapResourcesAndMiddleware } from './_RouteWithMapResourcesAndMiddleware.mjs';
+import { _RouteWithMapResources } from './_RouteWithMapResources.mjs';
+import { _FileServer } from '../utils/_FileServer.mjs';
 
-export class __FSRouter extends FSMiddleware {
-	/**
-	 * @type {__FSRouter}
-	 */
-	static __;
-	constructor() {
-		super();
-		if (__FSRouter.__ !== undefined) {
-			return;
-		}
-		__FSRouter.__ = this;
-	}
+export class FSRouter extends FSMiddleware {
 	/**
 	 * @param {import('http').IncomingMessage} request
 	 * @param {import('http').ServerResponse} response
 	 */
-	run = async (request, response) => {
+	constructor(request, response) {
+		super();
 		new __Request(request);
 		new __Response(response);
+	}
+	run = async () => {
 		await this.render();
 	};
 	/**
@@ -106,9 +102,9 @@ export class __FSRouter extends FSMiddleware {
 		}
 		if (route_instance instanceof _Routes) {
 			__atlaAS.__.assign_query_param_to_class_property(route_instance);
-			//         if ($this->check_is_map_resources($route, $route_ref)) {
-			//             return;
-			//         }
+			if (this.check_is_map_resources(route, route_instance)) {
+				return;
+			}
 			this.run_method_with_input_logic(route_instance);
 		}
 	};
@@ -118,11 +114,35 @@ export class __FSRouter extends FSMiddleware {
 	 */
 	run_method_with_input_logic = (route_instance) => {
 		const num_params = _FunctionHelpers.url_input_length(route_instance);
-		//     if ($num_params !== $this->request_length - $this->routes_length) {
-		//         __atlaAS::reroute_error(404);
-		//         return;
-		//     }
-		//     $url_inputs = \array_slice(__Request::$uri_array, -$num_params);
-		//     $route_ref->$method(...$url_inputs);
+		if (num_params !== this.request_length - this.routes_length) {
+			__atlaAS.__.reroute_error(404);
+			return;
+		}
+		const url_inputs = __Request.__.uri_array.slice(-num_params);
+		route_instance[__Request.__.method](...url_inputs);
+	};
+	/**
+	 * @private
+	 * @param {string} route_full_path
+	 * @param {_Routes} route_instance
+	 * @returns {boolean}
+	 */
+	check_is_map_resources = (route_full_path, route_instance) => {
+		if (route_instance instanceof _MapResources && __Request.__.method === 'get') {
+			const url_input = __Request.__.uri_array.slice(this.routes_length);
+			if (url_input.length === 0) {
+				if (route_instance instanceof _RouteWithMapResourcesAndMiddleware) {
+					route_instance.mw('get');
+					route_instance.get();
+				} else if (route_instance instanceof _RouteWithMapResources) {
+					route_instance.get();
+				}
+			} else {
+				route_instance.map_resources(...url_input);
+				_FileServer.serves(url_input, route_full_path);
+			}
+			return true;
+		}
+		return false;
 	};
 }

@@ -3,7 +3,6 @@
 import he from 'he';
 import { join as path_join } from 'path';
 import { __QueueFIFO } from './queue/__QueueFIFO.mjs';
-import { __FSRouter } from './router/__FSRouter.mjs';
 import { __NodeServer } from './server/__NodeServer.mjs';
 import { __Request } from './utils/__Request.mjs';
 import { __Response } from './utils/__Response.mjs';
@@ -25,7 +24,6 @@ export class __atlaAS {
 		}
 		new __settings();
 		new __env();
-		new __FSRouter();
 		new __QueueFIFO();
 		new __NodeServer().start_server();
 		__atlaAS.__ = this;
@@ -99,5 +97,41 @@ export class __atlaAS {
 		}
 		__Response.__.response.statusCode = code;
 		__Response.__.response.statusMessage = message;
+	};
+	/**
+	 * @param {string[]|(()=>(any|Promise<any>))} fallback
+	 * @param {import('./utils/_FolloupParams.mjs')._FolloupParams[]} conditionals
+	 * @param {Object.<string,string>} query_parameter
+	 * @param {boolean} inherit_query_parameter
+	 */
+	follow_up_params = (
+		fallback,
+		conditionals,
+		query_parameter = {},
+		inherit_query_parameter = true
+	) => {
+		// public static function follow_up_params(
+		// 	array|callable $fallback,
+		// 	array $conditionals,
+		// 	array $query_parameter = [],
+		// 	bool $inherit_query_parameter = true
+		// ): void {
+		// 	$match = true;
+		// 	foreach ($conditionals as $data) {
+		// 		[$conditional, $if_meet_merge] = $data;
+		// 		if (!$conditional) {
+		// 			$query_parameter = \array_merge($query_parameter, $if_meet_merge);
+		// 			$match = false;
+		// 		}
+		// 	}
+		// 	if (!$match) {
+		// 		if (\is_array($fallback)) {
+		// 			__atlaAS::render_get($fallback, $query_parameter, $inherit_query_parameter);
+		// 		} else {
+		// 			$fallback($query_parameter);
+		// 		}
+		// 		exit(0);
+		// 	}
+		// }
 	};
 }
