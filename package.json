@@ -23,6 +23,7 @@
 	"homepage": "https://github.com/hakimjazuli/atlaAS_node#readme",
 	"dependencies": {
 		"@html_first/simple_queue": "^1.2.0",
-		"he": "^1.2.0"
+		"he": "^1.2.0",
+		"mime": "^4.0.3"
 	}
 }

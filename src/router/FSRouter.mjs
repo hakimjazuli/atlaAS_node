@@ -38,7 +38,6 @@ export class FSRouter extends FSMiddleware {
 	 */
 	request_length = 0;
 	/**
-	 * @private
 	 * @param {boolean} is_real_route
 	 */
 	render = async (is_real_route = true) => {
@@ -64,7 +63,10 @@ export class FSRouter extends FSMiddleware {
 			__atlaAS.__.reroute_error(404);
 			return;
 		}
-		await this.run_real_route(is_real_route);
+		const result = await this.run_real_route(is_real_route);
+		if (typeof result === 'string') {
+			return result;
+		}
 	};
 	/**
 	 * @private
@@ -99,7 +101,10 @@ export class FSRouter extends FSMiddleware {
 			if (await this.check_is_map_resources(route, route_instance)) {
 				return;
 			}
-			await this.run_method_with_input_logic(route_instance);
+			const result = await this.run_method_with_input_logic(route_instance);
+			if (typeof result === 'string') {
+				return result;
+			}
 		}
 	};
 	/**
@@ -114,11 +119,10 @@ export class FSRouter extends FSMiddleware {
 		}
 		const url_inputs = __Request.__.uri_array.slice(-num_params);
 		const result = await route_instance[__Request.__.method](...url_inputs);
-		if (result && route_instance.is_real_route) {
-			__Response.__.response.end(result);
-			return;
+		if (!result || !route_instance.is_real_route) {
+			return result;
 		}
-		__Response.__.response.write(result);
+		__Response.__.response.end(result);
 	};
 	/**
 	 * @private
@@ -139,6 +143,7 @@ export class FSRouter extends FSMiddleware {
 			} else {
 				await route_instance.map_resources(...url_input);
 				_FileServer.serves(url_input, route_full_path);
+				// __Response.__.response.end();
 			}
 			return true;
 		}

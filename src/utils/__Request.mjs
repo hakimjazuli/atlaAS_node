@@ -1,5 +1,6 @@
 // @ts-check
 
+import he from 'he';
 import { join as path_join } from 'path';
 import { __Settings } from '../vars/__Settings.mjs';
 import { TLSSocket } from 'tls';
@@ -25,7 +26,7 @@ export class __Request {
 	/**
 	 * @type {Object.<string, string>}
 	 */
-	query_params_arrray = {};
+	query_params_array = {};
 	/**
 	 * @type {string}
 	 */
@@ -69,7 +70,7 @@ export class __Request {
 		if (request_uri.length > 1) {
 			this.query_param = request_uri[1];
 			const parsed_url = new URL(request.url, `${this.http_mode}://${request.headers.host}`);
-			this.query_params_arrray = Object.fromEntries(parsed_url.searchParams);
+			this.query_params_array = Object.fromEntries(parsed_url.searchParams);
 		}
 	}
 	/**
@@ -82,8 +83,9 @@ export class __Request {
 	 * @private
 	 */
 	set_uri = () => {
-		const uri = this.uri.split('/');
+		let uri = this.uri.split('/');
 		if (uri.length !== 1) {
+			uri = uri.map((string) => he.encode(string));
 			this.uri_array = uri;
 			return;
 		}
@@ -93,12 +95,13 @@ export class __Request {
 			uri[1] = uri[0];
 			uri[0] = 'index';
 		}
+		uri = uri.map((string) => he.encode(string));
 		this.uri_array = uri;
 	};
 	method_params = () => {
 		switch (this.method) {
 			case 'get':
-				return this.query_params_arrray;
+				return this.query_params_array;
 			default:
 				let body = '';
 				this.request.on('data', (chunk) => {

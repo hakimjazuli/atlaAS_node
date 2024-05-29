@@ -8,7 +8,7 @@ export class __Settings {
 
 	_routes_path = 'routes';
 	_public_path = 'public';
-	_system_file = ['mjs', 'ts'];
+	_system_file = ['mjs'];
 	_client_reroute_key = 'reroute';
 	_routes_errors_prefix = '/errors/';
 	_use_stream = true;

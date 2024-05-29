@@ -31,6 +31,10 @@ export class _FunctionHelpers {
 		return class_instance[__Request.__.method].length;
 	};
 	/**
+	 * @param {CallableFunction} callback
+	 */
+	static is_async = (callback) => callback.constructor.name === 'AsyncFunction';
+	/**
 	 * @param {string[][]} strings
 	 * @returns {string[]}
 	 */
@@ -38,5 +42,25 @@ export class _FunctionHelpers {
 		const mergedArray = strings.reduce((result, arr) => result.concat(arr), []);
 		const uniqueArray = [...new Set(mergedArray)];
 		return uniqueArray;
+	};
+	/**
+	 * @param {(()=>(Promise<any>|any))[]} functions
+	 * @returns {()=>Promise<any>}
+	 */
+	static callable_collections = (...functions) => {
+		return async () => await _FunctionHelpers.run_array_functions(...functions);
+	};
+	/**
+	 * @param {(()=>(Promise<any>|any))[]} functions
+	 */
+	static run_array_functions = async (...functions) => {
+		for (let i = 0; i < functions.length; i++) {
+			const function_ = functions[i];
+			if (!_FunctionHelpers.is_async(function_)) {
+				function_();
+				return;
+			}
+			await function_();
+		}
 	};
 }

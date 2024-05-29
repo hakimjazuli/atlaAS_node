@@ -28,6 +28,10 @@ export class __NodeServer {
 	 * @type {http.ServerResponse}
 	 */
 	response;
+	/**
+	 * @type {FSRouter}
+	 */
+	fs_router;
 	constructor() {
 		if (__NodeServer.__ !== undefined) {
 			return;
@@ -44,8 +48,8 @@ export class __NodeServer {
 			new _QueueObjectFIFO(async () => {
 				new __Request(request);
 				new __Response(response);
-				const fs_router = new FSRouter();
-				await fs_router.run();
+				this.fs_router = new FSRouter();
+				await this.fs_router.run();
 			}, __Settings.__._default_debounce_ms)
 		);
 	};
