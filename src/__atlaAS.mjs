@@ -34,21 +34,6 @@ export class __atlaAS {
 		new __NodeServer().start_server();
 		__atlaAS.__ = this;
 	}
-
-	//  /**
-	//  * render_get
-	//  *
-	//  * @param  null|array $class_ref_and_uri_input
-	//  * - null: use the same __Request::uri_array where this method is called;
-	//  * - array: [class_ref::class, ...$arguments_for_the_class_get_method];
-	//  * @param  array $query_parameters
-	//  * - associative array, assigned to route class property if any (for best practice);
-	//  * @param  bool $inherit_query_parameters
-	//  * - rendered route will:
-	//  * >- true:  inherit parent query parameter merge with $query_parameters;
-	//  * >- false: use $query_parameters as new query parameters;
-	//  * @return void
-	//  */
 	/**
 	 * @param {string} route_path
 	 * @param {string[]} uri_input
@@ -152,39 +137,59 @@ export class __atlaAS {
 		__Response.__.response.end(message);
 	};
 	/**
-	 * @param {string[]|(()=>(any|Promise<any>))} fallback
+	 * @param {string[]|((query_parameters:Object.<string,string>)=>(any|Promise<any>))} fallback
 	 * @param {import('./utils/_FolloupParams.mjs')._FolloupParams[]} conditionals
 	 * @param {Object.<string,string>} query_parameter
 	 * @param {boolean} inherit_query_parameter
+	 * @returns {Promise<boolean>}
+	 * manually return the method to avoid sending http.ServerResponse.end multiple times;
+	 * - true: don't return;
+	 * - false: immerdiately return;
 	 */
-	follow_up_params = (
+	follow_up_params = async (
 		fallback,
 		conditionals,
 		query_parameter = {},
 		inherit_query_parameter = true
 	) => {
-		// public static function follow_up_params(
-		// 	array|callable $fallback,
-		// 	array $conditionals,
-		// 	array $query_parameter = [],
-		// 	bool $inherit_query_parameter = true
-		// ): void {
-		// 	$match = true;
-		// 	foreach ($conditionals as $data) {
-		// 		[$conditional, $if_meet_merge] = $data;
-		// 		if (!$conditional) {
-		// 			$query_parameter = \array_merge($query_parameter, $if_meet_merge);
-		// 			$match = false;
-		// 		}
-		// 	}
-		// 	if (!$match) {
-		// 		if (\is_array($fallback)) {
-		// 			__atlaAS::render_get($fallback, $query_parameter, $inherit_query_parameter);
-		// 		} else {
-		// 			$fallback($query_parameter);
-		// 		}
-		// 		exit(0);
-		// 	}
-		// }
+		let match = true;
+		for (let i = 0; i < conditionals.length; i++) {
+			const { conditional, if_meet_merge } = conditionals[i];
+			if (conditional) {
+				continue;
+			}
+			Object.assign(query_parameter, if_meet_merge);
+			match = false;
+		}
+		if (match) {
+			return true;
+		}
+		if (Array.isArray(fallback)) {
+			const fallback_ = path_join(__Settings.__._routes_path, ...fallback);
+			const result = await __atlaAS.__.render_get(
+				fallback_,
+				[],
+				query_parameter,
+				inherit_query_parameter
+			);
+			if (typeof result === 'string') {
+				__Response.__.response.end(result);
+			}
+		} else {
+			fallback(query_parameter);
+		}
+		return false;
+	};
+	/**
+	 * @param {RegExp} regex
+	 * @param {string} input_name
+	 * - key of method parameter
+	 */
+	input_match = (regex, input_name) => {
+		const __nodeserver = __NodeServer.__;
+		if (__nodeserver.fs_router.form_s_input_param === null) {
+			__nodeserver.fs_router.form_s_input_param = __Request.__.method_params();
+		}
+		return regex.test(__nodeserver.fs_router.form_s_input_param[input_name]);
 	};
 }

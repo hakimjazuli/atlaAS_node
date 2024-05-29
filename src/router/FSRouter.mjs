@@ -149,4 +149,10 @@ export class FSRouter extends FSMiddleware {
 		}
 		return false;
 	};
+
+	/**
+	 * @public
+	 * @type {null|Object.<string,string>}
+	 */
+	form_s_input_param = null;
 }
