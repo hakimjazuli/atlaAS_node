@@ -85,8 +85,8 @@ export class __NodeServer {
 			console.log(`listen at: http://localhost:${addres.port}`);
 		}
 		process.on('exit', () => this.close_server());
-		// process.on('beforeExit', () => this.close_server());
-		// process.on('uncaughtException', () => this.close_server());
+		process.on('beforeExit', () => this.close_server());
+		process.on('uncaughtException', () => this.close_server());
 		process.on('SIGINT', () => this.close_server());
 	};
 	is_running = true;
