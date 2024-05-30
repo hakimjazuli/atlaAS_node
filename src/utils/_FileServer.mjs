@@ -10,6 +10,24 @@ import { __Response } from './__Response.mjs';
 
 export class _FileServer {
 	/**
+	 * @param {string} server_url
+	 * @returns {string}
+	 */
+	static file_version = (server_url) => {
+		const public_url = server_url
+			.replace(`/${__Settings.__._routes_path}`, '')
+			.replace('/index', '');
+		let version = '';
+		try {
+			version = `${public_url}?t=${statSync(
+				path_join(__atlaAS.__.app_root, server_url)
+			).mtime.getTime()}`;
+		} catch (error) {
+			return `${public_url}?v=404,NOTFOUND`;
+		}
+		return version;
+	};
+	/**
 	 * @param {string[]} relative_path
 	 * @param {string} system_dir
 	 * @param {boolean} force_download
