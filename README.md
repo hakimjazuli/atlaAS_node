@@ -71,3 +71,11 @@ export default class extends _Routes {
     >     to bottom priority;
     > -   route class propery functions as placeholder fro http method parameter
     >     > -   `/?test=9`, means will modify class property of test value to `9`;
+
+## additional
+
+you might need to install extentions/linters to help you with the `html` template literals
+
+-   for vscode I found this two helped a lot:
+    > -   [lit-html](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html)
+    > -   [vscode-template-literal-editor](https://marketplace.visualstudio.com/items?itemName=plievone.vscode-template-literal-editor)
