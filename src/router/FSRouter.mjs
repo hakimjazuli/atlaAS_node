@@ -98,7 +98,7 @@ export class FSRouter extends FSMiddleware {
 		}
 		if (route_instance instanceof _Routes) {
 			__atlaAS.__.assign_query_param_to_class_property(route_instance);
-			if (await this.check_is_map_resources(route, route_instance)) {
+			if ((await this.check_is_map_resources(route, route_instance)) === true) {
 				return;
 			}
 			const result = await this.run_method_with_input_logic(route_instance);
@@ -111,7 +111,7 @@ export class FSRouter extends FSMiddleware {
 	 * @private
 	 * @param {string} route_full_path
 	 * @param {_Routes} route_instance
-	 * @returns {Promise<boolean>}
+	 * @returns {Promise<boolean|string>}
 	 */
 	check_is_map_resources = async (route_full_path, route_instance) => {
 		if (route_instance instanceof _MapResources && __Request.__.method === 'get') {
@@ -121,7 +121,11 @@ export class FSRouter extends FSMiddleware {
 					case route_instance instanceof _RouteWithMapResourcesAndMiddleware:
 						route_instance.mw('get');
 					case route_instance instanceof _RouteWithMapResources:
-						await this.run_method_with_input_logic(route_instance);
+						const result = await this.run_method_with_input_logic(route_instance);
+						if (typeof result === 'string') {
+							return result;
+						}
+						return true;
 				}
 			} else {
 				if (__Settings.__.middleware_name() in route_instance) {
@@ -129,8 +133,8 @@ export class FSRouter extends FSMiddleware {
 				}
 				await route_instance.map_resources(...url_input);
 				_FileServer.serves(url_input, route_full_path);
+				return true;
 			}
-			return true;
 		}
 		return false;
 	};

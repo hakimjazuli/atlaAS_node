@@ -114,8 +114,8 @@ export class __atlaAS {
 					[__Settings.__._client_reroute_key]: location,
 				})
 			);
+			return;
 		}
-
 		__Response.__.response.writeHead(302, /** code to reroute */ { location });
 		__Response.__.response.end(message);
 	};
