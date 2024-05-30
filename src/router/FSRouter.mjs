@@ -109,6 +109,33 @@ export class FSRouter extends FSMiddleware {
 	};
 	/**
 	 * @private
+	 * @param {string} route_full_path
+	 * @param {_Routes} route_instance
+	 * @returns {Promise<boolean>}
+	 */
+	check_is_map_resources = async (route_full_path, route_instance) => {
+		if (route_instance instanceof _MapResources && __Request.__.method === 'get') {
+			const url_input = __Request.__.uri_array.slice(this.routes_length);
+			if (url_input.length === 0) {
+				switch (true) {
+					case route_instance instanceof _RouteWithMapResourcesAndMiddleware:
+						route_instance.mw('get');
+					case route_instance instanceof _RouteWithMapResources:
+						await this.run_method_with_input_logic(route_instance);
+				}
+			} else {
+				if (__Settings.__.middleware_name() in route_instance) {
+					route_instance[__Settings.__.middleware_name()]('get');
+				}
+				await route_instance.map_resources(...url_input);
+				_FileServer.serves(url_input, route_full_path);
+			}
+			return true;
+		}
+		return false;
+	};
+	/**
+	 * @private
 	 * @param {_Routes} route_instance
 	 */
 	run_method_with_input_logic = async (route_instance) => {
@@ -123,31 +150,6 @@ export class FSRouter extends FSMiddleware {
 			return result;
 		}
 		__Response.__.response.end(result);
-	};
-	/**
-	 * @private
-	 * @param {string} route_full_path
-	 * @param {_Routes} route_instance
-	 * @returns {Promise<boolean>}
-	 */
-	check_is_map_resources = async (route_full_path, route_instance) => {
-		if (route_instance instanceof _MapResources && __Request.__.method === 'get') {
-			const url_input = __Request.__.uri_array.slice(this.routes_length);
-			if (url_input.length === 0) {
-				if (route_instance instanceof _RouteWithMapResourcesAndMiddleware) {
-					route_instance.mw('get');
-					route_instance.get();
-				} else if (route_instance instanceof _RouteWithMapResources) {
-					route_instance.get();
-				}
-			} else {
-				await route_instance.map_resources(...url_input);
-				_FileServer.serves(url_input, route_full_path);
-				// __Response.__.response.end();
-			}
-			return true;
-		}
-		return false;
 	};
 
 	/**

@@ -99,7 +99,12 @@ export class __atlaAS {
 	 * @param {string[]} url_input
 	 * @param {boolean} use_client_side_routing
 	 */
-	reroute = (location, url_input = [], use_client_side_routing = false) => {
+	reroute = (
+		location,
+		url_input = [],
+		use_client_side_routing = false,
+		message = 'you have been rerouted'
+	) => {
 		if (url_input.length >= 1) {
 			location = path_join(location, ...url_input);
 		}
@@ -110,13 +115,15 @@ export class __atlaAS {
 				})
 			);
 		}
-		__Response.__.response.writeHead(200, { location });
-		__Response.__.response.end();
+
+		__Response.__.response.writeHead(302, /** code to reroute */ { location });
+		__Response.__.response.end(message);
 	};
 	/**
 	 * @param {number} code
+	 * @param {boolean} use_client_side_routing
 	 */
-	reroute_error = (code = 404) => {
+	reroute_error = (code = 404, use_client_side_routing = false) => {
 		let message = '';
 		switch (code) {
 			case 403:
@@ -131,10 +138,12 @@ export class __atlaAS {
 				message = 'HTTP/1.0 404 Not Found';
 				break;
 		}
-		__Response.__.response.writeHead(302 /** code to reroute */, {
-			location: path_join(__Settings.__._routes_errors_prefix, code.toString()),
-		});
-		__Response.__.response.end(message);
+		this.reroute(
+			path_join(__Settings.__._routes_errors_prefix, code.toString()),
+			[],
+			use_client_side_routing,
+			message
+		);
 	};
 	/**
 	 * @param {string[]|((query_parameters:Object.<string,string>)=>(any|Promise<any>))} fallback
