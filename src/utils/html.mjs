@@ -3,7 +3,6 @@
 import { htmlReturn } from './htmlReturn.mjs';
 
 /**
- * Description
  * @param {TemplateStringsArray} strings
  * @param {string[]} values
  * @returns {Promise<htmlReturn>}

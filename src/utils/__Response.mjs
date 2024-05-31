@@ -18,7 +18,6 @@ export class __Response {
 		__Response.__ = this;
 	}
 	/**
-	 * Description
 	 * @returns {__Response}
 	 */
 	html = () => {
@@ -26,7 +25,6 @@ export class __Response {
 		return __Response.__;
 	};
 	/**
-	 * Description
 	 * @returns {__Response}
 	 */
 	json = () => {

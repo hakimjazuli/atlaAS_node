@@ -19,7 +19,6 @@ export class __atlaAS {
 	 */
 	app_root;
 	/**
-	 * Description
 	 * @param {typeof import('./vars/__Settings.mjs').__Settings} __settings
 	 * @param {typeof import('./vars/__Env.mjs').__Env} __env
 	 */
