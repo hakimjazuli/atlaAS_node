@@ -83,7 +83,7 @@ export class __atlaAS {
 	};
 	/**
 	 * @param {import('./router/_Routes.mjs')._Routes|
-	 * import('./middlewares/_Middleware.mjs')._Middleware} class_instance
+	 * import('./middlewares/Middleware.mjs').Middleware} class_instance
 	 */
 	assign_query_param_to_class_property = (class_instance) => {
 		const query_param = __Request.__.query_params_array;

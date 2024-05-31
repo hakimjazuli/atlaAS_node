@@ -1,6 +1,6 @@
 // @ts-check
 
-import { _Middleware } from '../middlewares/_Middleware.mjs';
+import { Middleware } from '../middlewares/Middleware.mjs';
 import { _Routes } from './_Routes.mjs';
 
 export class _RouteWithMiddleware extends _Routes {

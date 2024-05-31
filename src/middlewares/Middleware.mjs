@@ -1,6 +1,6 @@
 // @ts-check
 
-export class _Middleware {
+export class Middleware {
 	/**
 	 * @param {string} method
 	 * @returns {Promise<boolean>}

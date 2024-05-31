@@ -11,6 +11,9 @@ import { _RouteWithMapResourcesAndMiddleware } from './src/router/_RouteWithMapR
 import { _FileServer } from './src/utils/_FileServer.mjs';
 import { __Request } from './src/utils/__Request.mjs';
 import { __Response } from './src/utils/__Response.mjs';
+import { _AppRegex } from './src/utils/_AppRegex.mjs';
+import { _FolloupParams } from './src/utils/_FolloupParams.mjs';
+import { _FunctionHelpers } from './src/utils/_FunctionHelpers.mjs';
 
 export {
 	__atlaAS,
@@ -24,4 +27,7 @@ export {
 	_FileServer,
 	__Request,
 	__Response,
+	_AppRegex,
+	_FolloupParams,
+	_FunctionHelpers,
 };

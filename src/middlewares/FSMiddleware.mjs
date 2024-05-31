@@ -1,7 +1,7 @@
 // @ts-check
 
 import fs from 'fs';
-import { _Middleware } from './_Middleware.mjs';
+import { Middleware } from './Middleware.mjs';
 import { __atlaAS } from '../__atlaAS.mjs';
 import { __Request } from '../utils/__Request.mjs';
 import { _FunctionHelpers } from '../utils/_FunctionHelpers.mjs';
@@ -45,7 +45,7 @@ export class FSMiddleware {
 			return true;
 		}
 		const mw_instance = new mw_ref();
-		if (mw_instance instanceof _Middleware) {
+		if (mw_instance instanceof Middleware) {
 			__atlaAS.__.assign_query_param_to_class_property(mw_instance);
 			return await mw_instance.mw(__Request.__.method);
 		}
