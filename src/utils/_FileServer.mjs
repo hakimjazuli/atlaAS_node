@@ -7,6 +7,7 @@ import { __Settings } from '../vars/__Settings.mjs';
 import { __atlaAS } from '../__atlaAS.mjs';
 import { _FunctionHelpers } from './_FunctionHelpers.mjs';
 import { __Response } from './__Response.mjs';
+import { __Request } from './__Request.mjs';
 
 export class _FileServer {
 	/**
@@ -83,14 +84,52 @@ export class _FileServer {
 			this.download_force(filename);
 			return;
 		}
-		this.set_content_type(filename);
+		const content_type = this.get_content_type(filename);
+		const fileSize = statSync(filename).size;
+		const range = __Request.__.request.headers['range'];
+		if (range) {
+			const parts = range.replace(/bytes=/, '').split('-');
+			const start = parseInt(parts[0], 10);
+			const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+
+			if (start >= fileSize || end >= fileSize) {
+				__Response.__.response.writeHead(416, {
+					'Content-Range': `bytes */${fileSize}`,
+					'Content-Type': 'text/plain',
+				});
+				__Response.__.response.end('Requested range not satisfiable');
+				return;
+			}
+
+			const chunkSize = end - start + 1;
+			const fileStream = createReadStream(filename, { start, end });
+
+			content_type &&
+				__Response.__.response.writeHead(206, {
+					'content-range': `bytes ${start}-${end}/${fileSize}`,
+					'accept-ranges': 'bytes',
+					'content-length': chunkSize,
+					'content-Type': content_type,
+				});
+
+			fileStream.pipe(__Response.__.response);
+			fileStream.on('error', (err) => {
+				console.error('File stream error:', err);
+				__Response.__.response.writeHead(500, { 'Content-Type': 'text/plain' });
+				__Response.__.response.end('Internal Server Error');
+			});
+			return;
+		}
 		const fileStream = createReadStream(filename);
+		__Response.__.response.setHeader('Content-Length', fileSize);
+		content_type && __Response.__.response.setHeader('Content-Type', content_type);
 		fileStream.pipe(__Response.__.response);
 		fileStream.on('error', (err) => {
 			console.error('File stream error:', err);
 			__Response.__.response.writeHead(500, { 'Content-Type': 'text/plain' });
 			__Response.__.response.end('Internal Server Error');
 		});
+
 		fileStream.on('end', () => {
 			__Response.__.response.end();
 		});
@@ -122,7 +161,7 @@ export class _FileServer {
 	 * @privete
 	 * @param {string} filename
 	 */
-	static set_content_type = (filename) => {
+	static get_content_type = (filename) => {
 		let file_size;
 		try {
 			file_size = statSync(filename).size;
