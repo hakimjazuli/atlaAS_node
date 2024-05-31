@@ -5,7 +5,12 @@ import { _RouteWithMapResources } from './_RouteWithMapResources.mjs';
 export class _RouteWithMapResourcesAndMiddleware extends _RouteWithMapResources {
 	/**
 	 * @param {string} method
-	 * @returns {Promise<any>}
+	 * @returns {Promise<boolean>}
 	 */
-	mw = async (method) => {};
+	mw = async (method) => {
+		/**
+		 * mock return;
+		 */
+		return true;
+	};
 }

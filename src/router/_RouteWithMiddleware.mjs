@@ -6,7 +6,12 @@ import { _Routes } from './_Routes.mjs';
 export class _RouteWithMiddleware extends _Routes {
 	/**
 	 * @param {string} method
-	 * @returns {Promise<any>}
+	 * @returns {Promise<boolean>}
 	 */
-	mw = async (method) => {};
+	mw = async (method) => {
+		/**
+		 * mock return;
+		 */
+		return true;
+	};
 }

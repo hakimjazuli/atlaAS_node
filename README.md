@@ -69,6 +69,10 @@ export default class extends _Routes {
     > -   class method parameters function as additional url to that http method;
     > -   any `mw.mjs` and class `mw` method functions as middleware of said http request, with top
     >     to bottom priority;
+    >     >     - mw method return bool:
+    >     >
+    >     > > -   true: allow server to continue the response;
+    >     > > -   false: immediately stop server response;
     > -   route class propery functions as placeholder fro http method parameter
     >     > -   `/?test=9`, means will modify class property of test value to `9`;
 

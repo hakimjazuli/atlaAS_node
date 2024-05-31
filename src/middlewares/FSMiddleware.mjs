@@ -26,24 +26,29 @@ export class FSMiddleware {
 			return false;
 		}
 	};
+	/**
+	 *
+	 * @returns {Promise<boolean>}
+	 */
 	check_mw = async () => {
 		const mw = this.current_middleware;
 		try {
 			const stats = fs.statSync(this.current_middleware);
 			if (!stats.isFile()) {
-				return;
+				return true;
 			}
 		} catch (error) {
-			return;
+			return true;
 		}
 		const mw_ref = await _FunctionHelpers.dynamic_import(mw);
 		if (!mw_ref) {
-			return;
+			return true;
 		}
 		const mw_instance = new mw_ref();
 		if (mw_instance instanceof _Middleware) {
 			__atlaAS.__.assign_query_param_to_class_property(mw_instance);
-			mw_instance.mw(__Request.__.method);
+			return await mw_instance.mw(__Request.__.method);
 		}
+		return true;
 	};
 }

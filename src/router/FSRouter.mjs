@@ -51,7 +51,9 @@ export class FSRouter extends FSMiddleware {
 			const uri = uri_array[i];
 			this.current_route = path_join(this.current_route, uri);
 			this.current_middleware = path_join(this.current_route, middleware_name);
-			this.check_mw();
+			if (!(await this.check_mw())) {
+				return;
+			}
 			routes_length++;
 			if (this.check_route()) {
 				this.routes_length = routes_length;
@@ -64,6 +66,9 @@ export class FSRouter extends FSMiddleware {
 			return;
 		}
 		const result = await this.run_real_route(is_real_route);
+		if (result === false) {
+			__Response.__.response.end();
+		}
 		if (typeof result === 'string') {
 			return result;
 		}
@@ -87,25 +92,28 @@ export class FSRouter extends FSMiddleware {
 	/**
 	 * @private
 	 * @param {boolean} is_real_route
+	 * @returns {Promise<boolean|string>}
 	 */
 	run_real_route = async (is_real_route) => {
 		const route = this.real_route;
 		const route_ref = await _FunctionHelpers.dynamic_import(route);
 		const route_instance = new route_ref(is_real_route);
-		if (route_instance instanceof _RouteWithMiddleware) {
-			__atlaAS.__.assign_query_param_to_class_property(route_instance);
-			route_instance.mw(__Request.__.method);
-		}
 		if (route_instance instanceof _Routes) {
 			__atlaAS.__.assign_query_param_to_class_property(route_instance);
+			if (route_instance instanceof _RouteWithMiddleware) {
+				if (!(await route_instance.mw(__Request.__.method))) {
+					return false;
+				}
+			}
 			if ((await this.check_is_map_resources(route, route_instance)) === true) {
-				return;
+				return true;
 			}
 			const result = await this.run_method_with_input_logic(route_instance);
 			if (typeof result === 'string') {
 				return result;
 			}
 		}
+		return false;
 	};
 	/**
 	 * @private
@@ -119,7 +127,12 @@ export class FSRouter extends FSMiddleware {
 			if (url_input.length === 0) {
 				switch (true) {
 					case route_instance instanceof _RouteWithMapResourcesAndMiddleware:
-						route_instance.mw('get');
+						if (!(await route_instance.mw('get'))) {
+							/**
+							 * to stop from checking any further route function check;
+							 */
+							return true;
+						}
 					case route_instance instanceof _RouteWithMapResources:
 						const result = await this.run_method_with_input_logic(route_instance);
 						if (typeof result === 'string') {
@@ -129,7 +142,12 @@ export class FSRouter extends FSMiddleware {
 				}
 			} else {
 				if (__Settings.__.middleware_name() in route_instance) {
-					route_instance[__Settings.__.middleware_name()]('get');
+					if (!(await route_instance[__Settings.__.middleware_name()]('get'))) {
+						/**
+						 * to stop from checking any further route function check;
+						 */
+						return true;
+					}
 				}
 				await route_instance.map_resources(...url_input);
 				_FileServer.serves(url_input, route_full_path);
