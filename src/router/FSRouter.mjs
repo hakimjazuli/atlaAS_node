@@ -167,6 +167,11 @@ export class FSRouter extends FSMiddleware {
 			return;
 		}
 		const url_inputs = __Request.__.uri_array.slice(-num_params);
+		const method = __Request.__.method;
+		if (!(method in route_instance)) {
+			__atlaAS.__.reroute_error(404);
+			return;
+		}
 		const result = await route_instance[__Request.__.method](...url_inputs);
 		if (!result || !route_instance.is_real_route) {
 			return result;
