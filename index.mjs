@@ -9,6 +9,8 @@ import { __Env } from './src/vars/__Env.mjs';
 import { _RouteWithMapResources } from './src/router/_RouteWithMapResources.mjs';
 import { _RouteWithMapResourcesAndMiddleware } from './src/router/_RouteWithMapResourcesAndMiddleware.mjs';
 import { _FileServer } from './src/utils/_FileServer.mjs';
+import { __Request } from './src/utils/__Request.mjs';
+import { __Response } from './src/utils/__Response.mjs';
 
 export {
 	__atlaAS,
@@ -20,4 +22,6 @@ export {
 	_RouteWithMapResources,
 	_RouteWithMapResourcesAndMiddleware,
 	_FileServer,
+	__Request,
+	__Response,
 };
