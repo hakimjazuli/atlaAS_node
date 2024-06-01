@@ -145,10 +145,16 @@ export class __atlaAS {
 		);
 	};
 	/**
-	 * @param {string[]|((query_parameters:Object.<string,string>)=>(any|Promise<any>))} fallback
+	 * @param {string|((query_parameters:Object.<string,string>)=>(any|Promise<any>))} fallback string:
+	 * - full path prefixed with '/';
+	 * - ends with file extention too;
+	 * @param {string[]} url_input
+	 * - array input for get method arguments;
 	 * @param {import('./utils/_FolloupParams.mjs')._FolloupParams[]} conditionals
 	 * @param {Object.<string,string>} query_parameter
-	 * @param {boolean} inherit_query_parameter
+	 * @param {boolean} inherit_query_parameter rendered route will:
+	 * - true:  inherit parent query parameter merged with $query_parameters;
+	 * - false: use $query_parameters as new query parameters;
 	 * @returns {Promise<boolean>}
 	 * manually return the method to avoid sending http.ServerResponse.end multiple times;
 	 * - true: don't return;
@@ -156,7 +162,8 @@ export class __atlaAS {
 	 */
 	follow_up_params = async (
 		fallback,
-		conditionals,
+		url_input = [],
+		conditionals = [],
 		query_parameter = {},
 		inherit_query_parameter = true
 	) => {
@@ -172,11 +179,10 @@ export class __atlaAS {
 		if (match) {
 			return true;
 		}
-		if (Array.isArray(fallback)) {
-			const fallback_ = path_join(__Settings.__._routes_path, ...fallback);
+		if (typeof fallback === 'string') {
 			const result = await __atlaAS.__.render_get(
-				fallback_,
-				[],
+				fallback,
+				url_input,
 				query_parameter,
 				inherit_query_parameter
 			);
