@@ -3,6 +3,7 @@
 export class _FolloupParams {
 	/**
 	 * @type {boolean}
+	 * - consider to use __atlaAS.__.input_match(...args);
 	 */
 	conditional;
 	/**
