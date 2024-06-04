@@ -156,9 +156,9 @@ export class __atlaAS {
 	 * - true:  inherit parent query parameter merged with $query_parameters;
 	 * - false: use $query_parameters as new query parameters;
 	 * @returns {Promise<boolean>}
-	 * manually return the method to avoid sending http.ServerResponse.end multiple times;
-	 * - true: don't return;
-	 * - false: immerdiately return;
+	 * manually wrap this function call on if(!follow_up_params(..args)){
+	 * 	return;
+	 * }
 	 */
 	follow_up_params = async (
 		fallback,
