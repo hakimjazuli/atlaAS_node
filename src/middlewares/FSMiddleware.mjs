@@ -1,10 +1,12 @@
 // @ts-check
 
 import fs from 'fs';
-import { Middleware } from './Middleware.mjs';
+import path, { join as path_join } from 'path';
+import { _Middleware } from './_Middleware.mjs';
 import { __atlaAS } from '../__atlaAS.mjs';
 import { __Request } from '../utils/__Request.mjs';
 import { _FunctionHelpers } from '../utils/_FunctionHelpers.mjs';
+import { __Settings } from '../vars/__Settings.mjs';
 
 export class FSMiddleware {
 	/**
@@ -31,21 +33,29 @@ export class FSMiddleware {
 	 * @returns {Promise<boolean>}
 	 */
 	check_mw = async () => {
-		const mw = this.current_middleware;
+		const mw =
+			this.current_middleware.replace(
+				path_join(__atlaAS.__.app_root, __Settings.__._routes_path, 'index'),
+				path_join(__atlaAS.__.app_root, __Settings.__._routes_path)
+			) +
+			'.' +
+			__Settings.__._system_file[0];
 		try {
-			const stats = fs.statSync(this.current_middleware);
+			const stats = fs.statSync(mw);
 			if (!stats.isFile()) {
 				return true;
 			}
 		} catch (error) {
 			return true;
 		}
-		const mw_ref = await _FunctionHelpers.dynamic_import(mw);
+		const mw_ref = await import(mw).catch(async () => {
+			return await import(`file://${mw}`).catch((err) => null);
+		});
 		if (!mw_ref) {
 			return true;
 		}
-		const mw_instance = new mw_ref();
-		if (mw_instance instanceof Middleware) {
+		const mw_instance = new mw_ref.default();
+		if (mw_instance instanceof _Middleware) {
 			__atlaAS.__.assign_query_param_to_class_property(mw_instance);
 			return await mw_instance.mw(__Request.__.method);
 		}

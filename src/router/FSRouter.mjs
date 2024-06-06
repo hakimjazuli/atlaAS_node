@@ -38,6 +38,14 @@ export class FSRouter extends FSMiddleware {
 	 */
 	request_length = 0;
 	/**
+	 * @private
+	 */
+	handle_mw = async () => {
+		const middleware_name = __Settings.__.middleware_name();
+		this.current_middleware = path_join(this.current_route, middleware_name);
+		return await this.check_mw();
+	};
+	/**
 	 * @param {boolean} is_real_route
 	 */
 	render = async (is_real_route = true) => {
@@ -46,12 +54,13 @@ export class FSRouter extends FSMiddleware {
 		this.request_length = uri_array.length;
 		this.current_route = path_join(__atlaAS.__.app_root, __setting._routes_path);
 		let routes_length = 0;
-		const middleware_name = __setting.middleware_name();
+		if (!(await this.handle_mw())) {
+			return;
+		}
 		for (let i = 0; i < uri_array.length; i++) {
 			const uri = uri_array[i];
 			this.current_route = path_join(this.current_route, uri);
-			this.current_middleware = path_join(this.current_route, middleware_name);
-			if (!(await this.check_mw())) {
+			if (i !== 0 && !(await this.handle_mw())) {
 				return;
 			}
 			routes_length++;

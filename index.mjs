@@ -14,6 +14,8 @@ import { __Response } from './src/utils/__Response.mjs';
 import { _AppRegex } from './src/utils/_AppRegex.mjs';
 import { _FolloupParams } from './src/utils/_FolloupParams.mjs';
 import { _FunctionHelpers } from './src/utils/_FunctionHelpers.mjs';
+import { _Middleware } from './src/middlewares/_Middleware.mjs';
+import { _Cors } from './src/utils/_Cors.mjs';
 
 export {
 	__atlaAS,
@@ -30,4 +32,6 @@ export {
 	_AppRegex,
 	_FolloupParams,
 	_FunctionHelpers,
+	_Middleware,
+	_Cors,
 };
