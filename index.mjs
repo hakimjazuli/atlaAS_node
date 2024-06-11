@@ -16,7 +16,8 @@ import { _FolloupParams } from './src/utils/_FolloupParams.mjs';
 import { _FunctionHelpers } from './src/utils/_FunctionHelpers.mjs';
 import { _Middleware } from './src/middlewares/_Middleware.mjs';
 import { _Cors } from './src/utils/_Cors.mjs';
-
+import { htmlReturn } from './src/utils/htmlReturn.mjs';
+import { __NodeServer } from './src/server/__NodeServer.mjs';
 export {
 	__atlaAS,
 	__Settings,
@@ -34,4 +35,6 @@ export {
 	_FunctionHelpers,
 	_Middleware,
 	_Cors,
+	htmlReturn,
+	__NodeServer,
 };
