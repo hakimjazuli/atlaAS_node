@@ -3,6 +3,8 @@
 import { __Env } from './__Env.mjs';
 
 export class __Settings {
+	_use_process_cwd_as_root = true;
+
 	_default_port = 8080;
 	_default_debounce_ms = 0;
 

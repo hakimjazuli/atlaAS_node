@@ -1,7 +1,8 @@
 // @ts-check
 
 import he from 'he';
-import { join as path_join } from 'path';
+import { fileURLToPath } from 'url';
+import path, { join as path_join } from 'path';
 import { __QueueFIFO } from './queue/__QueueFIFO.mjs';
 import { __NodeServer } from './server/__NodeServer.mjs';
 import { __Request } from './utils/__Request.mjs';
@@ -26,13 +27,34 @@ export class __atlaAS {
 		if (__atlaAS.__ !== undefined) {
 			return;
 		}
-		this.app_root = process.cwd();
 		new __settings();
 		new __env();
+		if (__Settings.__._use_process_cwd_as_root) {
+			this.app_root = process.cwd();
+		} else {
+			console.log({
+				url: path.dirname(fileURLToPath(import.meta.url).replace('file://', '')),
+			});
+			this.app_root = this.get_base(fileURLToPath(import.meta.url).replace('file://', ''));
+		}
 		new __QueueFIFO();
 		new __NodeServer().start_server();
 		__atlaAS.__ = this;
 	}
+	/**
+	 * @private
+	 * @param {string} curent__
+	 * @returns {string}
+	 */
+	get_base = (curent__) => {
+		const dir_name = path.dirname(curent__);
+		const base_name = path.basename(dir_name);
+		if (base_name == 'node_modules') {
+			return path.dirname(dir_name);
+		} else {
+			return this.get_base(dir_name);
+		}
+	};
 	/**
 	 * @param {string} route_path
 	 * @param {string[]} uri_input
