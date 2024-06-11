@@ -10,7 +10,7 @@ export class _Cors {
 	 * @param {string[]} allowed_headers - If it contains '*', it allows all headers.
 	 * @param {Number} max_age - Max age in days.
 	 */
-	static run(allowed_origins = [], allowed_methods = [], allowed_headers = [], max_age = 1) {
+	static allow(allowed_origins = [], allowed_methods = [], allowed_headers = [], max_age = 1) {
 		const origin = __Request.__.request.headers.origin || '';
 		const response = __Response.__;
 		if (allowed_origins.includes('*')) {
