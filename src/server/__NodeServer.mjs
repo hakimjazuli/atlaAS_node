@@ -16,7 +16,6 @@ export class __NodeServer {
 	 */
 	static __;
 	/**
-	 * @private
 	 * @type {import('http').Server}
 	 */
 	server;
