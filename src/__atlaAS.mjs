@@ -32,9 +32,6 @@ export class __atlaAS {
 		if (__Settings.__._use_process_cwd_as_root) {
 			this.app_root = process.cwd();
 		} else {
-			console.log({
-				url: path.dirname(fileURLToPath(import.meta.url).replace('file://', '')),
-			});
 			this.app_root = this.get_base(fileURLToPath(import.meta.url).replace('file://', ''));
 		}
 		new __QueueFIFO();
