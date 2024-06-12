@@ -18,7 +18,7 @@ import { _Middleware } from './src/middlewares/_Middleware.mjs';
 import { _Cors } from './src/utils/_Cors.mjs';
 import { htmlReturn } from './src/utils/htmlReturn.mjs';
 import { __NodeServer } from './src/server/__NodeServer.mjs';
-
+import { _SQLiteRateLimiter } from './src/utils/_SQLiteRateLimiter.mjs';
 export {
 	__atlaAS,
 	__Settings,
@@ -38,4 +38,5 @@ export {
 	_Cors,
 	htmlReturn,
 	__NodeServer,
+	_SQLiteRateLimiter,
 };
