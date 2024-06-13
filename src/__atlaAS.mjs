@@ -123,6 +123,11 @@ export class __atlaAS {
 		use_client_side_routing = false,
 		message = 'you have been rerouted'
 	) => {
+		location = location
+			.replace('/index', '/')
+			.replace(`.${__Settings.__._system_file[0]}`, '')
+			.replace(__Settings.__._routes_path, '')
+			.replace(/\/+/g, '/');
 		if (url_input.length >= 1) {
 			location = path_join(location, ...url_input);
 		}
