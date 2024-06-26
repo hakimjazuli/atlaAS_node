@@ -180,11 +180,11 @@ export class __atlaAS {
 	 * - true:  inherit parent query parameter merged with $query_parameters;
 	 * - false: use $query_parameters as new query parameters;
 	 * @returns {Promise<boolean>}
-	 * manually wrap this function call on if(!follow_up_params(..args)){
+	 * manually wrap this function call on if(!validate_params(..args)){
 	 * 	return;
 	 * }
 	 */
-	follow_up_params = async (
+	validate_params = async (
 		fallback,
 		url_input = [],
 		conditionals = [],
