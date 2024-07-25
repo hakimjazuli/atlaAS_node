@@ -19,6 +19,8 @@ import { _Cors } from './src/utils/_Cors.mjs';
 import { htmlReturn } from './src/utils/htmlReturn.mjs';
 import { __NodeServer } from './src/server/__NodeServer.mjs';
 import { _SQLiteRateLimiter } from './src/utils/_SQLiteRateLimiter.mjs';
+import { _MapResources } from './src/router/_MapResources.mjs';
+
 export {
 	__atlaAS,
 	__Settings,
@@ -26,6 +28,7 @@ export {
 	_Routes,
 	_RouteWithMiddleware,
 	html,
+	_MapResources,
 	_RouteWithMapResources,
 	_RouteWithMapResourcesAndMiddleware,
 	_FileServer,
