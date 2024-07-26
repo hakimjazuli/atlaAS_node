@@ -6,6 +6,8 @@ import { _Routes } from '../router/_Routes.mjs';
 import { __Settings } from '../vars/__Settings.mjs';
 import { __Request } from './__Request.mjs';
 
+const dynamic_import_cache = {};
+
 export class _FunctionHelpers {
 	/**
 	 * @param {string} path
@@ -20,6 +22,9 @@ export class _FunctionHelpers {
 				return __atlaAS.__._route_list[route_path];
 			}
 		}
+		if (dynamic_import_cache[path]) {
+			return dynamic_import_cache[path];
+		}
 		const system_files = __Settings.__._system_file;
 		for (let i = 0; i < system_files.length; i++) {
 			const extention = system_files[i];
@@ -28,7 +33,7 @@ export class _FunctionHelpers {
 				return await import(`file://${path}`).catch((err) => null);
 			});
 			if (result) {
-				return result.default;
+				return (dynamic_import_cache[path] = result.default);
 			}
 		}
 		return null;
