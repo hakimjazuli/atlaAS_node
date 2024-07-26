@@ -8,6 +8,7 @@ export class __Settings {
 	_default_port = 8080;
 	_default_debounce_ms = 0;
 
+	_base_identifier = 'node_modules';
 	_routes_path = 'routes';
 	_public_path = 'public';
 	_system_file = ['mjs'];

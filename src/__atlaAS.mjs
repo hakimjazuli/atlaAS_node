@@ -52,7 +52,7 @@ export class __atlaAS {
 	get_base = (curent__) => {
 		const dir_name = path.dirname(curent__);
 		const base_name = path.basename(dir_name);
-		if (base_name == 'node_modules') {
+		if (base_name == __Settings.__._base_identifier) {
 			return path.dirname(dir_name);
 		} else {
 			return this.get_base(dir_name);
