@@ -13,10 +13,9 @@ export class _FunctionHelpers {
 	 */
 	static dynamic_import = async (path) => {
 		if (__atlaAS.__._route_list) {
-			const route_path = path.replace(
-				path_join(__atlaAS.__.app_root, __Settings.__._routes_path) + '\\',
-				''
-			);
+			const route_path = path
+				.replace(path_join(__atlaAS.__.app_root, __Settings.__._routes_path) + '\\', '')
+				.replace(/\\/g, '/');
 			if (__atlaAS.__._route_list[route_path]) {
 				return __atlaAS.__._route_list[route_path];
 			}
