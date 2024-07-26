@@ -27,6 +27,8 @@ export class __atlaAS {
 	 * @param {typeof import('./vars/__Settings.mjs').__Settings} __settings
 	 * @param {typeof import('./vars/__Env.mjs').__Env} __env
 	 * @param {(import('../index.mjs')._RouteList)|undefined} [_route_list]
+	 * - undefined: dynamic route call;
+	 * - defined: allow for bundling, make sure to overwrite __Settings._base_identifier to uppermost dir name of the bundled file(before root);
 	 */
 	constructor(__settings, __env, _route_list = undefined) {
 		if (__atlaAS.__ !== undefined) {
