@@ -21,6 +21,10 @@ import { __NodeServer } from './src/server/__NodeServer.mjs';
 import { _SQLiteRateLimiter } from './src/utils/_SQLiteRateLimiter.mjs';
 import { _MapResources } from './src/router/_MapResources.mjs';
 
+/**
+ * @typedef {{ [x: string]: (typeof _Routes|typeof _Middleware); }} _RouteList
+ */
+
 export {
 	__atlaAS,
 	__Settings,

@@ -20,13 +20,19 @@ export class __atlaAS {
 	 */
 	app_root;
 	/**
+	 * @type {(import('../index.mjs')._RouteList)|undefined}
+	 */
+	_route_list;
+	/**
 	 * @param {typeof import('./vars/__Settings.mjs').__Settings} __settings
 	 * @param {typeof import('./vars/__Env.mjs').__Env} __env
+	 * @param {(import('../index.mjs')._RouteList)|undefined} [_route_list]
 	 */
-	constructor(__settings, __env) {
+	constructor(__settings, __env, _route_list = undefined) {
 		if (__atlaAS.__ !== undefined) {
 			return;
 		}
+		this._route_list = _route_list;
 		new __settings();
 		new __env();
 		if (__Settings.__._use_process_cwd_as_root) {

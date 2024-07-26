@@ -24,7 +24,7 @@
 	"dependencies": {
 		"@html_first/simple_queue": "^1.2.0",
 		"he": "^1.2.0",
-		"mime": "^4.0.3",
+		"mime": "^4.0.4",
 		"sqlite3": "^5.1.7"
 	}
 }

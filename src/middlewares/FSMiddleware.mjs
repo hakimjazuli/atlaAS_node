@@ -1,7 +1,7 @@
 // @ts-check
 
 import fs from 'fs';
-import path, { join as path_join } from 'path';
+import { join as path_join } from 'path';
 import { _Middleware } from './_Middleware.mjs';
 import { __atlaAS } from '../__atlaAS.mjs';
 import { __Request } from '../utils/__Request.mjs';
@@ -33,13 +33,10 @@ export class FSMiddleware {
 	 * @returns {Promise<boolean>}
 	 */
 	check_mw = async () => {
-		const mw =
-			this.current_middleware.replace(
-				path_join(__atlaAS.__.app_root, __Settings.__._routes_path, 'index'),
-				path_join(__atlaAS.__.app_root, __Settings.__._routes_path)
-			) +
-			'.' +
-			__Settings.__._system_file[0];
+		const mw = this.current_middleware.replace(
+			path_join(__atlaAS.__.app_root, __Settings.__._routes_path, 'index'),
+			path_join(__atlaAS.__.app_root, __Settings.__._routes_path)
+		);
 		try {
 			const stats = fs.statSync(mw);
 			if (!stats.isFile()) {
@@ -48,9 +45,7 @@ export class FSMiddleware {
 		} catch (error) {
 			return true;
 		}
-		const mw_ref = await import(mw).catch(async () => {
-			return await import(`file://${mw}`).catch((err) => null);
-		});
+		const mw_ref = await _FunctionHelpers.dynamic_import(mw);
 		if (!mw_ref) {
 			return true;
 		}

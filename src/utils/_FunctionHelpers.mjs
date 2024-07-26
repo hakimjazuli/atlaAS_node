@@ -1,5 +1,7 @@
 // @ts-check
 
+import { join as path_join } from 'path';
+import { __atlaAS } from '../__atlaAS.mjs';
 import { _Routes } from '../router/_Routes.mjs';
 import { __Settings } from '../vars/__Settings.mjs';
 import { __Request } from './__Request.mjs';
@@ -10,6 +12,15 @@ export class _FunctionHelpers {
 	 * @returns {Promise<Object|null>}
 	 */
 	static dynamic_import = async (path) => {
+		if (__atlaAS.__._route_list) {
+			const route_path = path.replace(
+				path_join(__atlaAS.__.app_root, __Settings.__._routes_path),
+				''
+			);
+			if (__atlaAS.__._route_list[route_path]) {
+				return __atlaAS.__._route_list[route_path];
+			}
+		}
 		const system_files = __Settings.__._system_file;
 		for (let i = 0; i < system_files.length; i++) {
 			const extention = system_files[i];
