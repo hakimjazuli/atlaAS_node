@@ -1,6 +1,6 @@
 {
 	"name": "@html_first/atla-as_node",
-	"version": "0.12.2",
+	"version": "0.12.3",
 	"description": "atlaAS FS Routing library port for node server",
 	"main": "index.mjs",
 	"scripts": {
