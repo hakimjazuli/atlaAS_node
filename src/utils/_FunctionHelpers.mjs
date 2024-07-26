@@ -14,16 +14,16 @@ export class _FunctionHelpers {
 	 * @returns {Promise<Object|null>}
 	 */
 	static dynamic_import = async (path) => {
+		if (dynamic_import_cache[path]) {
+			return dynamic_import_cache[path];
+		}
 		if (__atlaAS.__._route_list) {
 			const route_path = path
 				.replace(path_join(__atlaAS.__.app_root, __Settings.__._routes_path) + '\\', '')
 				.replace(/\\/g, '/');
 			if (__atlaAS.__._route_list[route_path]) {
-				return __atlaAS.__._route_list[route_path];
+				return (dynamic_import_cache[path] = __atlaAS.__._route_list[route_path]);
 			}
-		}
-		if (dynamic_import_cache[path]) {
-			return dynamic_import_cache[path];
 		}
 		const system_files = __Settings.__._system_file;
 		for (let i = 0; i < system_files.length; i++) {
