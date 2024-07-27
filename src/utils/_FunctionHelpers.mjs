@@ -7,6 +7,17 @@ import { __Settings } from '../vars/__Settings.mjs';
 import { __Request } from './__Request.mjs';
 
 const dynamic_import_cache = {};
+/**
+ * @param {string} path
+ * @param {Object|null} [imported]
+ * @returns {Promise<Object|null>}
+ */
+const resolve_dynamic_import = (path, imported = null) => {
+	if (!__Settings.__._allow_routes_caching) {
+		return imported;
+	}
+	return (dynamic_import_cache[path] = imported);
+};
 
 export class _FunctionHelpers {
 	/**
@@ -15,14 +26,14 @@ export class _FunctionHelpers {
 	 */
 	static dynamic_import = async (path) => {
 		if (dynamic_import_cache[path]) {
-			return dynamic_import_cache[path];
+			return resolve_dynamic_import(path);
 		}
 		if (__atlaAS.__._route_list) {
 			const route_path = path
 				.replace(path_join(__atlaAS.__.app_root, __Settings.__._routes_path) + '\\', '')
 				.replace(/\\/g, '/');
 			if (__atlaAS.__._route_list[route_path]) {
-				return (dynamic_import_cache[path] = __atlaAS.__._route_list[route_path]);
+				return resolve_dynamic_import(path, __atlaAS.__._route_list[route_path]);
 			}
 		}
 		const system_files = __Settings.__._system_file;
@@ -33,7 +44,7 @@ export class _FunctionHelpers {
 				return await import(`file://${path}`).catch((err) => null);
 			});
 			if (result) {
-				return (dynamic_import_cache[path] = result.default);
+				return resolve_dynamic_import(path, result.default);
 			}
 		}
 		return null;
