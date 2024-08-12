@@ -1,29 +1,30 @@
 {
 	"name": "@html_first/atla-as_node",
 	"version": "0.13.2",
-	"description": "atlaAS FS Routing library port for node server",
-	"main": "index.mjs",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
+	"author": "hakim_jazuli",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/hakimjazuli/atlaAS_node.git"
 	},
+	"main": "index.mjs",
+	"dependencies": {
+		"@html_first/simple_queue": "^1.2.1",
+		"he": "^1.2.0",
+		"mime": "^4.0.4",
+		"sqlite3": "^5.1.7"
+	},
+	"bugs": {
+		"url": "https://github.com/hakimjazuli/atlaAS_node/issues"
+	},
+	"description": "atlaAS FS Routing library port for node server",
+	"homepage": "https://github.com/hakimjazuli/atlaAS_node#readme",
 	"keywords": [
 		"atlaAS",
 		"FSRouting",
 		"node"
 	],
-	"author": "hakim_jazuli",
 	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/hakimjazuli/atlaAS_node/issues"
-	},
-	"homepage": "https://github.com/hakimjazuli/atlaAS_node#readme",
-	"dependencies": {
-		"he": "^1.2.0",
-		"mime": "^4.0.4",
-		"sqlite3": "^5.1.7"
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
 	}
 }
