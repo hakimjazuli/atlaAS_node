@@ -24,26 +24,42 @@ export class __atlaAS {
 	 */
 	_route_list;
 	/**
-	 * @param {typeof import('./vars/__Settings.mjs').__Settings} __settings
-	 * @param {typeof import('./vars/__Env.mjs').__Env} __env
-	 * @param {(import('../index.mjs')._RouteList)|undefined} [_route_list]
+	 * @private
+	 * @param {number} port
+	 * @returns {boolean}
+	 */
+	static is_valid_port = (port) => {
+		return Number.isInteger(port) && port >= 0 && port <= 65535;
+	};
+	/**
+	 * @param {Object} a0
+	 * @param {typeof import('./vars/__Settings.mjs').__Settings} a0.settings
+	 * @param {typeof import('./vars/__Env.mjs').__Env} a0.env
+	 * @param {number} [a0.overwrite_port]
+	 * @param {(import('../index.mjs')._RouteList)} [a0.route_list]
 	 * - undefined: dynamic route call;
 	 * - _RouteList: allow for bundling, make sure to overwrite __Settings._base_identifier to uppermost dir name of the bundled file(before root);
 	 */
-	constructor(__settings, __env, _route_list = undefined) {
+	constructor({ settings, env, route_list = undefined, overwrite_port = undefined }) {
 		if (__atlaAS.__ !== undefined) {
 			return;
 		}
-		this._route_list = _route_list;
-		new __settings();
-		new __env();
+		this._route_list = route_list;
+		new settings();
+		new env();
+		if (overwrite_port) {
+			__Settings.__._default_port = overwrite_port;
+		}
 		if (__Settings.__._use_process_cwd_as_root) {
 			this.app_root = process.cwd();
 		} else {
 			this.app_root = this.get_base(fileURLToPath(import.meta.url).replace('file://', ''));
 		}
 		new __QueueFIFO();
-		new __NodeServer().start_server();
+		if (overwrite_port && __atlaAS.is_valid_port(overwrite_port)) {
+			__Settings.__._default_port = overwrite_port;
+		}
+		new __NodeServer().start_server(overwrite_port);
 		__atlaAS.__ = this;
 	}
 	/**

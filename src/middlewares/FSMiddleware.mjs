@@ -10,6 +10,24 @@ import { __Settings } from '../vars/__Settings.mjs';
 
 export class FSMiddleware {
 	/**
+	 * @private
+	 * @type {Map<any, boolean>}
+	 */
+	allow_cache = new Map();
+	/**
+	 * @param {any} identifier
+	 * @param {()=>Promise<boolean>} callback
+	 */
+	is_mw_allowed = async (identifier, callback) => {
+		const current = this.allow_cache.get(identifier);
+		if (current === true) {
+			return true;
+		}
+		const new_bool = await callback();
+		this.allow_cache.set(identifier, new_bool);
+		return new_bool;
+	};
+	/**
 	 * @type {string}
 	 */
 	current_middleware;

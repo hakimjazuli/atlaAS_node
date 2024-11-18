@@ -6,34 +6,42 @@ import { _Routes } from '../router/_Routes.mjs';
 import { __Settings } from '../vars/__Settings.mjs';
 import { __Request } from './__Request.mjs';
 
-const dynamic_import_cache = {};
-/**
- * @param {string} path
- * @param {Object|null} [imported]
- * @returns {Promise<Object|null>}
- */
-const resolve_dynamic_import = (path, imported = null) => {
-	if (!__Settings.__._allow_routes_caching) {
-		return imported;
-	}
-	return (dynamic_import_cache[path] = imported);
-};
-
 export class _FunctionHelpers {
+	/**
+	 * @private
+	 * @type {Map<string, Object|null>}
+	 */
+	static dynamic_import_cache = new Map();
+	/**
+	 * @private
+	 * @param {string} path
+	 * @param {Object|null} [imported]
+	 * @returns {Promise<Object|null>}
+	 */
+	static resolve_dynamic_import = (path, imported = null) => {
+		if (!__Settings.__._allow_routes_caching) {
+			return imported;
+		}
+		_FunctionHelpers.dynamic_import_cache.set(path, imported);
+		return imported;
+	};
 	/**
 	 * @param {string} path
 	 * @returns {Promise<Object|null>}
 	 */
 	static dynamic_import = async (path) => {
-		if (dynamic_import_cache[path]) {
-			return resolve_dynamic_import(path);
+		if (_FunctionHelpers.dynamic_import_cache.get(path)) {
+			return _FunctionHelpers.resolve_dynamic_import(path);
 		}
 		if (__atlaAS.__._route_list) {
 			const route_path = path
 				.replace(path_join(__atlaAS.__.app_root, __Settings.__._routes_path) + '\\', '')
 				.replace(/\\/g, '/');
 			if (__atlaAS.__._route_list[route_path]) {
-				return resolve_dynamic_import(path, __atlaAS.__._route_list[route_path]);
+				return _FunctionHelpers.resolve_dynamic_import(
+					path,
+					__atlaAS.__._route_list[route_path]
+				);
 			}
 		}
 		const system_files = __Settings.__._system_file;
@@ -44,7 +52,7 @@ export class _FunctionHelpers {
 				return await import(`file://${path}`).catch((err) => null);
 			});
 			if (result) {
-				return resolve_dynamic_import(path, result.default);
+				return _FunctionHelpers.resolve_dynamic_import(path, result.default);
 			}
 		}
 		return null;

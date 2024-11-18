@@ -72,8 +72,23 @@ export class __NodeServer {
 			this.listen_to_random_port();
 		}
 	};
-	start_server = () => {
-		if (__Env.__._in_production) {
+	/**
+	 * @private
+	 * @param {number} port
+	 * @returns {boolean}
+	 */
+	static is_valid_port = (port) => {
+		return Number.isInteger(port) && port >= 0 && port <= 65535;
+	};
+
+	/**
+	 * @param {number} [overwrite_port]
+	 */
+	start_server = (overwrite_port) => {
+		if (
+			(!overwrite_port || !__NodeServer.is_valid_port(overwrite_port)) &&
+			__Env.__._in_production
+		) {
 			this.listen_to_random_port();
 		} else {
 			this.listen_to_port();

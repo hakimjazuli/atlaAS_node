@@ -54,13 +54,24 @@ export class FSRouter extends FSMiddleware {
 		this.request_length = uri_array.length;
 		this.current_route = path_join(__atlaAS.__.app_root, __setting._routes_path);
 		let routes_length = 0;
-		if (!(await this.handle_mw())) {
+		if (
+			!(await this.is_mw_allowed(
+				/**
+				 * I cannot think of any possible scenario where class `FSRouter` used as key for normal `this.current_route`, therefore it's safe to assume to use it;
+				 */
+				FSRouter,
+				async () => await this.handle_mw()
+			))
+		) {
 			return;
 		}
 		for (let i = 0; i < uri_array.length; i++) {
 			const uri = uri_array[i];
 			this.current_route = path_join(this.current_route, uri);
-			if (i !== 0 && !(await this.handle_mw())) {
+			if (
+				i !== 0 &&
+				!(await this.is_mw_allowed(this.current_route, async () => await this.handle_mw()))
+			) {
 				return;
 			}
 			routes_length++;
@@ -109,12 +120,16 @@ export class FSRouter extends FSMiddleware {
 		const route_instance = new route_ref(is_real_route);
 		if (route_instance instanceof _Routes) {
 			__atlaAS.__.assign_query_param_to_class_property(route_instance);
-			if (route_instance instanceof _RouteWithMiddleware) {
-				if (!(await route_instance.mw(__Request.__.method))) {
-					return false;
-				}
+			if (
+				route_instance instanceof _RouteWithMiddleware &&
+				!(await this.is_mw_allowed(
+					route,
+					async () => await route_instance.mw(__Request.__.method)
+				))
+			) {
+				return false;
 			}
-			if ((await this.check_is_map_resources(route, route_instance)) === true) {
+			if (await this.check_is_map_resources_or_mw_blocked(route, route_instance)) {
 				return true;
 			}
 			const result = await this.run_method_with_input_logic(route_instance);
@@ -129,41 +144,45 @@ export class FSRouter extends FSMiddleware {
 	 * @param {string} route_full_path
 	 * @param {_Routes} route_instance
 	 * @returns {Promise<boolean|string>}
+	 * - if map_resources || mw_blocked then retrurns true;
 	 */
-	check_is_map_resources = async (route_full_path, route_instance) => {
-		if (route_instance instanceof _MapResources && __Request.__.method === 'get') {
-			const url_input = __Request.__.uri_array.slice(this.routes_length);
-			if (url_input.length === 0) {
-				switch (true) {
-					case route_instance instanceof _RouteWithMapResourcesAndMiddleware:
-						if (!(await route_instance.mw('get'))) {
-							/**
-							 * to stop from checking any further route function check;
-							 */
-							return true;
-						}
-					case route_instance instanceof _RouteWithMapResources:
-						const result = await this.run_method_with_input_logic(route_instance);
-						if (typeof result === 'string') {
-							return result;
-						}
-						return true;
-				}
-			} else {
-				if (__Settings.__.middleware_name() in route_instance) {
-					if (!(await route_instance[__Settings.__.middleware_name()]('get'))) {
-						/**
-						 * to stop from checking any further route function check;
-						 */
-						return true;
-					}
-				}
-				await route_instance.map_resources(...url_input);
-				_FileServer.serves(url_input, route_full_path);
+	check_is_map_resources_or_mw_blocked = async (route_full_path, route_instance) => {
+		if (!(route_instance instanceof _MapResources) || __Request.__.method !== 'get') {
+			return false;
+		}
+		const url_input = __Request.__.uri_array.slice(this.routes_length);
+		if (url_input.length === 0) {
+			if (
+				route_instance instanceof _RouteWithMapResourcesAndMiddleware &&
+				!(await this.is_mw_allowed(
+					route_full_path,
+					async () => await route_instance.mw('get')
+				))
+			) {
+				/**
+				 * block from run_method_with_input_logic
+				 */
 				return true;
 			}
+			/**
+			 * pass to run_method_with_input_logic
+			 */
+			return false;
 		}
-		return false;
+		if (
+			!(route_instance instanceof _RouteWithMapResourcesAndMiddleware) ||
+			(await this.is_mw_allowed(
+				route_full_path,
+				async () => await route_instance[__Settings.__.middleware_name()]('get')
+			))
+		) {
+			await route_instance.map_resources(...url_input);
+			_FileServer.serves(url_input, route_full_path);
+		}
+		/**
+		 * block from run_method_with_input_logic
+		 */
+		return true;
 	};
 	/**
 	 * @private
