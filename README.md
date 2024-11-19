@@ -13,8 +13,7 @@ php have wide range of built in connection class using `PDO` which also already 
 you might need to install extentions/linters to help you with the `html` template literals
 - for vscode we found this wither one of these helped a lot:
 > - [lit-html](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html)
-> - [vscode-template-literal-editor](https://marketplace.visualstudio.com/items?itemName=plievone.
-vscode-template-literal-editor)
+> - [vscode-template-literal-editor](https://marketplace.visualstudio.com/items?itemName=plievone.vscode-template-literal-editor)
 ## class_helper
 - any class prefixed with "_" are a helper class;
 - it contains methods or constructor to help you in common scenarios;
