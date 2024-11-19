@@ -19,7 +19,7 @@
  * - however in `nodeJS`, there's high chances connection library will be different per project, therefore atlaAS `connection` and `querying` functionality WILL NOT be implemented in this `port`, as in EVER;
  * ## additional
  * you might need to install extentions/linters to help you with the `html` template literals
- * - for vscode we found this wither one of these helped a lot:
+ * - for vscode we found this either one of these helped a lot:
  * > - [lit-html](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html)
  * > - [vscode-template-literal-editor](https://marketplace.visualstudio.com/items?itemName=plievone.vscode-template-literal-editor)
  * ## class_helper
