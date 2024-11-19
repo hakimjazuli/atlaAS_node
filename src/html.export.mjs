@@ -5,7 +5,7 @@ import { htmlReturn } from './htmlReturn.mjs';
 /**
  * @description
  * - helper function to generate html string asynchronously;
- * - combine with `IDE` extentions for emet with our [recomendations](#additional);
+ * - combine with `IDE` extentions for emet with our [recomendations](#recomendations);
  */
 /**
  * @param {TemplateStringsArray} strings

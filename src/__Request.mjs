@@ -8,6 +8,7 @@ import { __atlaAS } from './__atlaAS.mjs';
 /**
  * @description
  * - is a [singleton](#singleton)
+ * - helper for node http["IncomingMessage"];
  */
 export class __Request {
 	/**

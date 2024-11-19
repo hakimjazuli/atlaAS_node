@@ -9,7 +9,7 @@ npm i @html_first/atla-as_node
 ## problem with porting
 php have wide range of built in connection class using `PDO` which also already highly used as the goto solution in php environtment:
 - however in `nodeJS`, there's high chances connection library will be different per project, therefore atlaAS `connection` and `querying` functionality WILL NOT be implemented in this `port`, as in EVER;
-## additional
+## recomendations
 you might need to install extentions/linters to help you with the `html` template literals
 - for vscode we found this either one of these helped a lot:
 > - [lit-html](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html)
@@ -67,7 +67,7 @@ you might need to install extentions/linters to help you with the `html` templat
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
-- helper function to generate html string asynchronously;- combine with `IDE` extentions for emet with our [recomendations](#additional);
+- helper function to generate html string asynchronously;- combine with `IDE` extentions for emet with our [recomendations](#recomendations);
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
@@ -220,7 +220,7 @@ type helper for manual _RouteList
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
-- is a [singleton](#singleton)
+- is a [singleton](#singleton)- helper for node http["IncomingMessage"];
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
@@ -229,7 +229,7 @@ type helper for manual _RouteList
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
-- is a [singleton](#singleton)
+- is a [singleton](#singleton)- helper for node http["ServerResponse"];
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 

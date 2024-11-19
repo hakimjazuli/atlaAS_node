@@ -1,6 +1,7 @@
 /**
  * @description
  * - is a [singleton](#singleton)
+ * - helper for node http["ServerResponse"];
  */
 export class __Response {
     /**
