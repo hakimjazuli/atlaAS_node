@@ -48,13 +48,4 @@ import { __NodeServer } from './src/__NodeServer.mjs';
 import { __Request } from './src/__Request.mjs';
 import { __Response } from './src/__Response.mjs';
 import { __Settings } from './src/__Settings.mjs';
-
-/**
- * @description
- * type helper for manual _RouteList
- */
-/**
- * @typedef {{[route:string]: typeof _Routes|typeof _Middleware}} _RouteList
- */
-
 export { html, _AppRegex, _Cors, _FileServer, _FollowUpParams, _FunctionHelpers, _MapResources, _Middleware, _Routes, _RouteWithMapResources, _RouteWithMapResourcesAndMiddleware, _RouteWithMiddleware, _SQLiteRateLimiter, __atlaAS, __Env, __NodeServer, __Request, __Response, __Settings };

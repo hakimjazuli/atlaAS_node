@@ -1,6 +1,3 @@
-export type _RouteList = {
-    [route: string]: typeof _Routes | typeof _Middleware;
-};
 import { html } from './src/html.export.mjs';
 import { _AppRegex } from './src/_AppRegex.mjs';
 import { _Cors } from './src/_Cors.mjs';

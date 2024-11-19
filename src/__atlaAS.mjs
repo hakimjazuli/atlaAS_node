@@ -39,10 +39,6 @@ export class __atlaAS {
 	 */
 	app_root;
 	/**
-	 * @type {(import('../index.mjs')._RouteList)|undefined}
-	 */
-	_route_list;
-	/**
 	 * @private
 	 * @param {number} port
 	 * @returns {boolean}
@@ -55,16 +51,14 @@ export class __atlaAS {
 	 * @param {typeof import('./__Settings.mjs').__Settings} a0.settings
 	 * @param {typeof import('./__Env.mjs').__Env} a0.env
 	 * @param {number} [a0.overwrite_port]
-	 * @param {(import('../index.mjs')._RouteList)} [a0.route_list]
 	 * - undefined: dynamic route call;
 	 * - _RouteList: allow for bundling, make sure to overwrite __Settings._base_identifier to uppermost dir name of the bundled file(before root);
 	 */
-	constructor({ settings, env, route_list = undefined, overwrite_port = undefined }) {
+	constructor({ settings, env, overwrite_port = undefined }) {
 		if (__atlaAS.__ !== undefined) {
 			return;
 		}
 		__atlaAS.__ = this;
-		this._route_list = route_list;
 		new settings();
 		new env();
 		if (overwrite_port) {
