@@ -3,13 +3,32 @@
 import he from 'he';
 import { fileURLToPath } from 'url';
 import path, { join as path_join } from 'path';
-import { __QueueFIFO } from './queue/__QueueFIFO.mjs';
-import { __NodeServer } from './server/__NodeServer.mjs';
-import { __Request } from './utils/__Request.mjs';
-import { __Response } from './utils/__Response.mjs';
-import { __Settings } from './vars/__Settings.mjs';
-import { _FunctionHelpers } from './utils/_FunctionHelpers.mjs';
+import { queueFIFO } from './queueFIFO.mjs';
+import { __NodeServer } from './__NodeServer.mjs';
+import { __Request } from './__Request.mjs';
+import { __Response } from './__Response.mjs';
+import { __Settings } from './__Settings.mjs';
+import { _FunctionHelpers } from './_FunctionHelpers.mjs';
 
+/**
+ * @description
+ * - is a [singleton](#singleton)
+ * - use this class to instantiate the server
+ * ```js
+ * // /backend/atlaAS.mjs
+ * new __atlaAS({
+ * 	settings: __Settings, // extends from [__Settings](#__settings)
+ * 	env: __Env, // extends from [__Env](#__env)
+ * 	...options
+ * });
+ * ```
+ * - call using bun or node
+ * ```shell
+ * bun --watch ./backend/atlaAS.mjs
+ * npm run ./backend/atlaAS.mjs -- --watch
+ * ```
+ * - it's recomended to save the script on the package.json for convenience
+ */
 export class __atlaAS {
 	/**
 	 * @type {__atlaAS}
@@ -33,8 +52,8 @@ export class __atlaAS {
 	};
 	/**
 	 * @param {Object} a0
-	 * @param {typeof import('./vars/__Settings.mjs').__Settings} a0.settings
-	 * @param {typeof import('./vars/__Env.mjs').__Env} a0.env
+	 * @param {typeof import('./__Settings.mjs').__Settings} a0.settings
+	 * @param {typeof import('./__Env.mjs').__Env} a0.env
 	 * @param {number} [a0.overwrite_port]
 	 * @param {(import('../index.mjs')._RouteList)} [a0.route_list]
 	 * - undefined: dynamic route call;
@@ -44,6 +63,7 @@ export class __atlaAS {
 		if (__atlaAS.__ !== undefined) {
 			return;
 		}
+		__atlaAS.__ = this;
 		this._route_list = route_list;
 		new settings();
 		new env();
@@ -55,12 +75,11 @@ export class __atlaAS {
 		} else {
 			this.app_root = this.get_base(fileURLToPath(import.meta.url).replace('file://', ''));
 		}
-		new __QueueFIFO();
+		new queueFIFO();
 		if (overwrite_port && __atlaAS.is_valid_port(overwrite_port)) {
 			__Settings.__._default_port = overwrite_port;
 		}
 		new __NodeServer().start_server(overwrite_port);
-		__atlaAS.__ = this;
 	}
 	/**
 	 * @private
@@ -78,6 +97,7 @@ export class __atlaAS {
 	};
 	/**
 	 * @param {string} route_path
+	 * - project absoulte path to the route
 	 * @param {string[]} uri_input
 	 * @param {Object.<string,string>} query_parameters
 	 * @param {boolean} inherit_query_parameters
@@ -124,8 +144,8 @@ export class __atlaAS {
 		}
 	};
 	/**
-	 * @param {import('./router/_Routes.mjs')._Routes|
-	 * import('./middlewares/_Middleware.mjs')._Middleware} class_instance
+	 * @param {import('./_Routes.mjs')._Routes|
+	 * import('./_Middleware.mjs')._Middleware} class_instance
 	 */
 	assign_query_param_to_class_property = (class_instance) => {
 		const query_param = __Request.__.query_params_array;
@@ -156,13 +176,17 @@ export class __atlaAS {
 			location = path_join(location, ...url_input);
 		}
 		if (use_client_side_routing) {
-			__Response.__.json().response.end(
+			__Response.__.json().end(
 				JSON.stringify({
 					[__Settings.__._client_reroute_key]: location,
 				})
 			);
 			return;
 		}
+		const req = __Request.__.request;
+		const host = req.headers.host || `${req.socket.localAddress}:${req.socket.localPort}`;
+		const protocol = req.headers['x-forwarded-proto'] || 'http';
+		location = `${protocol}://${path_join(host ?? '', location)}`;
 		__Response.__.response.writeHead(302, /** code to reroute */ { location });
 		__Response.__.response.end(message);
 	};
@@ -198,7 +222,7 @@ export class __atlaAS {
 	 * - ends with file extention too;
 	 * @param {string[]} url_input
 	 * - array input for get method arguments;
-	 * @param {import('./utils/_FolloupParams.mjs')._FolloupParams[]} conditionals
+	 * @param {import('./_FollowUpParams.mjs')._FollowUpParams[]} conditionals
 	 * @param {Object.<string,string>} query_parameter
 	 * @param {boolean} inherit_query_parameter rendered route will:
 	 * - true:  inherit parent query parameter merged with $query_parameters;
