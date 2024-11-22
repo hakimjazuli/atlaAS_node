@@ -33,7 +33,7 @@ you might need to install extentions/linters to help you with the `html` templat
 
 - [res](#res)
 
-- [route_method](#route_method)
+- [routeMethod](#routemethod)
 
 - [_AppRegex](#_appregex)
 
@@ -95,9 +95,9 @@ you might need to install extentions/linters to help you with the `html` templat
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
-<h2 id="route_method">route_method</h2>
+<h2 id="routemethod">routeMethod</h2>
 
-type helper for route_method```js/** * @typedef {(mode:mwInputs.mw_chain_helper)=>Promise<boolean>} mw_method * - returns true or awaited chains return value; * @typedef {(...uri_inputs:string[])=>Promise<string>} route_get_method * - each of uri_input must never have default value; * @typedef {(...uri_inputs:string[])=>Promise<void>} route_method * - each of uri_input must never have default value; */```
+type helper for routeMethod```js/** * @typedef {(mode:mwInputs.mw_chain_helper)=>Promise<boolean>} mwMethod * - returns true or awaited chains return value; * @typedef {(...uri_inputs:string[])=>Promise<string>} routeGetMethod * - each of uri_input must never have default value; * @typedef {(...uri_inputs:string[])=>Promise<void>} routeMethod * - each of uri_input must never have default value; */```
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
@@ -146,14 +146,14 @@ type helper for route_method```js/** * @typedef {(mode:mwInputs.mw_chain_help
 
 <h2 id="_middleware">_Middleware</h2>
 
-- is a [helper class](#helper_class);- extends this to `mw.mjs` on a folder, that folder and it's subfolders will have this `mw` method called as middleware;- `_Routes` class that also acts as middleware, it's `mw` method will be called `only` when that specific `routes` is requested, no matter which http method is being called;```js// /routes/api/mw.js// in wich case it will be called on any request to '/api/..' and all of it's sub path;export default class extends _Middleware {	/** @type {import('@html_first/atla-as_node').mw_method} */	mw = async ({ mw, mw_err, chains }) => {		// return true; // you need to manually add return boolean when using `_Middleware` derivative;		return await chains(...		/**		 * - generate middleware callback:		 * > - mw : (req, res, next) => (void|Promise<void>);		 * > - mw_err : (err, req, res, next) => (void|Promise<void>);		 * - both are only functions as typehelper;		 * - if your middleware are structured like either of that, you can just write the reference;		 */		);};}``````js// /routes/index.mjs// it will be called only on request to uri root ('/index', '/' or '')export default class extends _RouteWithMiddleware {// the same with above;	mw = async ({ ...options }) => {};// however it also can have http_method of it's own to call, if needed; get = async () => {};}```- this middleware callback are compliance with js `middleware architecture/pattern`, it has `request`, `response`, `next` parameter,> - `request` are instance extended from `http.IncomingMessage`;> - `response` are instance extended from `http.ServerResponse`;> - we added to `request` and `reponse` `method`/`property` prefixed with `atlaas_`;> - `next` are callback to allow to proceed to next callback (middleware or route);> > - by default it will not be called, if you use `_Middleware` and it's derivatives, without manually calling it, the request will imediately be blocked from calling next callback;
+- is a [helper class](#helper_class);- extends this to `mw.mjs` on a folder, that folder and it's subfolders will have this `mw` method called as middleware;- `_Routes` class that also acts as middleware, it's `mw` method will be called `only` when that specific `routes` is requested, no matter which http method is being called;```js// /routes/api/mw.js// in wich case it will be called on any request to '/api/..' and all of it's sub path;export default class extends _Middleware {	/** @type {import('@html_first/atla-as_node').mwMethod} */	mw = async ({ mw, mw_err, chains }) => {		// return true; // you need to manually add return boolean when using `_Middleware` derivative;		return await chains(...		/**		 * - generate middleware callback:		 * > - mw : (req, res, next) => (void|Promise<void>);		 * > - mw_err : (err, req, res, next) => (void|Promise<void>);		 * - both are only functions as typehelper;		 * - if your middleware are structured like either of that, you can just write the reference;		 */		);};}``````js// /routes/index.mjs// it will be called only on request to uri root ('/index', '/' or '')export default class extends _RouteWithMiddleware {// the same with above;	mw = async ({ ...options }) => {};// however it also can have http_method of it's own to call, if needed; get = async () => {};}```- this middleware callback are compliance with js `middleware architecture/pattern`, it has `request`, `response`, `next` parameter,> - `request` are instance extended from `http.IncomingMessage`;> - `response` are instance extended from `http.ServerResponse`;> - we added to `request` and `reponse` `method`/`property` prefixed with `atlaas_`;> - `next` are callback to allow to proceed to next callback (middleware or route);> > - by default it will not be called, if you use `_Middleware` and it's derivatives, without manually calling it, the request will imediately be blocked from calling next callback;
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
 <h2 id="_routes">_Routes</h2>
 
-- is a [helper class](#helper_class);- extends this class or any class prefixed with "_Route" to register that route as ` system router`;```jsexport default class extends _Routes{	/** @type {import('@html_first/atla-as_node').route_get_method} */// use type route_method instead for non get method	get = (		...url_inputs		// all inputs is in string type;		// should never have default value, as it will mess with length of the input detection;	) => {	};}```
+- is a [helper class](#helper_class);- extends this class or any class prefixed with "_Route" to register that route as ` system router`;```jsexport default class extends _Routes{	/** @type {import('@html_first/atla-as_node').routeGetMethod} */// use type routeMethod instead for non get method	get = (		...url_inputs		// all inputs is in string type;		// should never have default value, as it will mess with length of the input detection;	) => {	};}```
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 

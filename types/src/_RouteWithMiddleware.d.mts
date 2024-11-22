@@ -6,8 +6,8 @@
  */
 export class _RouteWithMiddleware extends _Routes {
     /**
-     * @type {import('./route_method.type.mjs').mw_method}
+     * @type {import('./routeMethod.type.mjs').mwMethod}
      */
-    mw: import("./route_method.type.mjs").mw_method;
+    mw: import("./routeMethod.type.mjs").mwMethod;
 }
 import { _Routes } from './_Routes.mjs';

@@ -12,7 +12,7 @@ import { _RouteWithMapResources } from './_RouteWithMapResources.mjs';
  */
 export class _RouteWithMapResourcesAndMiddleware extends _RouteWithMapResources {
 	/**
-	 * @type {import('./route_method.type.mjs').mw_method}
+	 * @type {import('./routeMethod.type.mjs').mwMethod}
 	 */
 	mw = async () => {
 		return false;

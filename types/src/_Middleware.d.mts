@@ -7,7 +7,7 @@
  * // /routes/api/mw.js
  * // in wich case it will be called on any request to '/api/..' and all of it's sub path;
  * export default class extends _Middleware {
- * 	/** [blank]@type {import('@html_first/atla-as_node').mw_method} *[blank]/
+ * 	/** [blank]@type {import('@html_first/atla-as_node').mwMethod} *[blank]/
  * 	mw = async ({ mw, mw_err, chains }) => {
  * 		// return true; // you need to manually add return boolean when using `_Middleware` derivative;
  * 		return await chains(...
@@ -41,7 +41,7 @@
  */
 export class _Middleware {
     /**
-     * @type {import('./route_method.type.mjs').mw_method}
+     * @type {import('./routeMethod.type.mjs').mwMethod}
      */
-    mw: import("./route_method.type.mjs").mw_method;
+    mw: import("./routeMethod.type.mjs").mwMethod;
 }

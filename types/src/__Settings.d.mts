@@ -14,6 +14,7 @@ export class __Settings {
     _default_debounce_ms: number;
     _base_identifier: string;
     _allow_routes_caching: boolean;
+    _file_cache_days: number;
     _routes_path: string;
     _system_file: string;
     _client_reroute_key: string;

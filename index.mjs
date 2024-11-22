@@ -59,14 +59,14 @@ import { __SQLite3 } from './src/__SQLite3.mjs';
  */
 /**
  * @description
- * type helper for route_method
+ * type helper for routeMethod
  * ```js
  * /**
- *  * @typedef {(mode:mwInputs.mw_chain_helper)=>Promise<boolean>} mw_method
+ *  * @typedef {(mode:mwInputs.mw_chain_helper)=>Promise<boolean>} mwMethod
  *  * - returns true or awaited chains return value;
- *  * @typedef {(...uri_inputs:string[])=>Promise<string>} route_get_method
+ *  * @typedef {(...uri_inputs:string[])=>Promise<string>} routeGetMethod
  *  * - each of uri_input must never have default value;
- *  * @typedef {(...uri_inputs:string[])=>Promise<void>} route_method
+ *  * @typedef {(...uri_inputs:string[])=>Promise<void>} routeMethod
  *  * - each of uri_input must never have default value;
  *  *[blank]/
  * ```

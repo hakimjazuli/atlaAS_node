@@ -12,7 +12,7 @@ import { _Routes } from './_Routes.mjs';
  */
 export class _RouteWithMiddleware extends _Routes {
 	/**
-	 * @type {import('./route_method.type.mjs').mw_method}
+	 * @type {import('./routeMethod.type.mjs').mwMethod}
 	 */
 	mw = async () => {
 		return false;

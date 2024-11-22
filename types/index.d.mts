@@ -4,22 +4,22 @@ export type read_error_ = (err: any, req: __atlaAS["request"], res: __atlaAS["re
  * * - returns true or awaited chains return value;
  * *
  */
-export type mw_method = (mode: {
-    mw: (callback: import("./src/route_method.type.mjs").standard_mw_) => import("./src/route_method.type.mjs").standard_mw_;
-    mw_err: (callback: import("./src/route_method.type.mjs").read_error_) => import("./src/route_method.type.mjs").read_error_;
-    chains: (...middlewares: (import("./src/route_method.type.mjs").standard_mw_ | import("./src/route_method.type.mjs").read_error_)[]) => Promise<boolean>;
+export type mwMethod = (mode: {
+    mw: (callback: import("./src/routeMethod.type.mjs").standard_mw_) => import("./src/routeMethod.type.mjs").standard_mw_;
+    mw_err: (callback: import("./src/routeMethod.type.mjs").read_error_) => import("./src/routeMethod.type.mjs").read_error_;
+    chains: (...middlewares: (import("./src/routeMethod.type.mjs").standard_mw_ | import("./src/routeMethod.type.mjs").read_error_)[]) => Promise<boolean>;
 }) => Promise<boolean>;
 /**
  * * - each of uri_input must never have default value;
  * *
  */
-export type route_get_method = (...uri_inputs: string[]) => Promise<string>;
+export type routeGetMethod = (...uri_inputs: string[]) => Promise<string>;
 /**
  * * - each of uri_input must never have default value;
  * *[blank]/
  * ```
  */
-export type route_method = (...uri_inputs: string[]) => Promise<void>;
+export type routeMethod = (...uri_inputs: string[]) => Promise<void>;
 import { html } from './src/html.export.mjs';
 import { htmlReturn } from './src/htmlReturn.export.mjs';
 import { mwInputs } from './src/mwInputs.export.mjs';

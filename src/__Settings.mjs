@@ -20,6 +20,8 @@ export class __Settings {
 	_base_identifier = 'node_modules';
 	_allow_routes_caching = true;
 
+	_file_cache_days = 60;
+
 	_routes_path = 'routes';
 	_system_file = 'mjs';
 	_client_reroute_key = 'reroute';
@@ -48,7 +50,7 @@ export class __Settings {
 	 * @returns {[boolean,number]}
 	 */
 	use_caching = () => {
-		return [this.if_in_production(true, false), 60 /** days */];
+		return [this.if_in_production(true, false), this._file_cache_days /** days */];
 	};
 	/**
 	 * @param {boolean} in_production_value

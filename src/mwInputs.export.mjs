@@ -4,8 +4,8 @@ import { __atlaAS } from './__atlaAS.mjs';
 
 export class mwInputs {
 	/**
-	 * @typedef {import('./route_method.type.mjs').standard_mw_} standard_mw
-	 * @typedef {import('./route_method.type.mjs').read_error_} read_error
+	 * @typedef {import('./routeMethod.type.mjs').standard_mw_} standard_mw
+	 * @typedef {import('./routeMethod.type.mjs').read_error_} read_error
 	 * @typedef {standard_mw|read_error} middleware
 	 * @param {...middleware} middlewares
 	 * @returns {Promise<boolean>}

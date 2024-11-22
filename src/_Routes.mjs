@@ -8,8 +8,8 @@ import { _FunctionHelpers } from './_FunctionHelpers.mjs';
  * - extends this class or any class prefixed with "_Route" to register that route as ` system router`;
  * ```js
  * export default class extends _Routes{
- * 	/** [blank]@type {import('@html_first/atla-as_node').route_get_method} *[blank]/
- * // use type route_method instead for non get method
+ * 	/** [blank]@type {import('@html_first/atla-as_node').routeGetMethod} *[blank]/
+ * // use type routeMethod instead for non get method
  * 	get = (
  * 		...url_inputs
  * 		// all inputs is in string type;
