@@ -1,7 +1,6 @@
 // @ts-check
 
-import { __Request } from './__Request.mjs';
-import { __Response } from './__Response.mjs';
+import { __atlaAS } from './__atlaAS.mjs';
 
 /**
  * @description
@@ -16,43 +15,37 @@ export class _Cors {
 	 * @param {Number} max_age - Max age in days.
 	 */
 	static allow(allowed_origins = [], allowed_methods = [], allowed_headers = [], max_age = 1) {
-		const origin = __Request.__.request.headers.origin || '';
-		const response = __Response.__;
+		const origin = __atlaAS.__.request.headers.origin || '';
+		const response = __atlaAS.__.response;
 		if (allowed_origins.includes('*')) {
-			response.response.setHeader('Access-Control-Allow-Origin', '*');
+			response.setHeader('Access-Control-Allow-Origin', '*');
 		} else if (allowed_origins.includes(origin)) {
-			response.response.setHeader('Access-Control-Allow-Origin', origin);
+			response.setHeader('Access-Control-Allow-Origin', origin);
 		}
 		if (allowed_methods.includes('*')) {
-			response.response.setHeader('Access-Control-Allow-Methods', '*');
+			response.setHeader('Access-Control-Allow-Methods', '*');
 		} else if (allowed_methods.length > 0) {
-			response.response.setHeader('Access-Control-Allow-Methods', allowed_methods.join(', '));
+			response.setHeader('Access-Control-Allow-Methods', allowed_methods.join(', '));
 		}
 		if (allowed_headers.includes('*')) {
-			response.response.setHeader('Access-Control-Allow-Headers', '*');
+			response.setHeader('Access-Control-Allow-Headers', '*');
 		} else if (allowed_headers.length > 0) {
-			response.response.setHeader('Access-Control-Allow-Headers', allowed_headers.join(', '));
+			response.setHeader('Access-Control-Allow-Headers', allowed_headers.join(', '));
 		}
-		if (__Request.__.method === 'options') {
+		if (__atlaAS.__.request.atlaas_method === 'options') {
 			if (allowed_methods.includes('*')) {
-				response.response.setHeader('Access-Control-Allow-Methods', '*');
+				response.setHeader('Access-Control-Allow-Methods', '*');
 			} else if (allowed_methods.length > 0) {
-				response.response.setHeader(
-					'Access-Control-Allow-Methods',
-					allowed_methods.join(', ')
-				);
+				response.setHeader('Access-Control-Allow-Methods', allowed_methods.join(', '));
 			}
 			if (allowed_headers.includes('*')) {
-				response.response.setHeader('Access-Control-Allow-Headers', '*');
+				response.setHeader('Access-Control-Allow-Headers', '*');
 			} else if (allowed_headers.length > 0) {
-				response.response.setHeader(
-					'Access-Control-Allow-Headers',
-					allowed_headers.join(', ')
-				);
+				response.setHeader('Access-Control-Allow-Headers', allowed_headers.join(', '));
 			}
-			response.response.setHeader('Access-Control-Max-Age', max_age * 86400);
-			response.response.statusCode = 204;
-			response.response.end();
+			response.setHeader('Access-Control-Max-Age', max_age * 86400);
+			response.statusCode = 204;
+			__atlaAS.__.end_();
 			return false;
 		}
 		return true;

@@ -7,6 +7,7 @@
  * new __atlaAS({
  * 	settings: __Settings, // extends from [__Settings](#__settings)
  * 	env: __Env, // extends from [__Env](#__env)
+ * 	sqlite3: __Sqlite3, // extends from [__Sqlite3](#__sqlite3)
  * 	...options
  * });
  * ```
@@ -32,19 +33,51 @@ export class __atlaAS {
      * @param {Object} a0
      * @param {typeof import('./__Settings.mjs').__Settings} a0.settings
      * @param {typeof import('./__Env.mjs').__Env} a0.env
+     * @param {typeof import('./__SQLite3.mjs').__SQLite3} [a0.sqlite3]
      * @param {number} [a0.overwrite_port]
      * - undefined: dynamic route call;
      * - _RouteList: allow for bundling, make sure to overwrite __Settings._base_identifier to uppermost dir name of the bundled file(before root);
      */
-    constructor({ settings, env, overwrite_port }: {
+    constructor({ settings, env, sqlite3, overwrite_port }: {
         settings: typeof import("./__Settings.mjs").__Settings;
         env: typeof import("./__Env.mjs").__Env;
+        sqlite3?: typeof import("./__SQLite3.mjs").__SQLite3;
         overwrite_port?: number;
     });
     /**
      * @type {string}
      */
     app_root: string;
+    do_not_response_with_end: boolean;
+    /**
+     * @param {any} val
+     */
+    end_: (val: any) => void;
+    /**
+     * @type {any}
+     */
+    current_error: any;
+    /**
+     * @type {ReturnType<import('./request_.mjs').request_>}
+     */
+    request: ReturnType<(request: import("http").IncomingMessage) => import("http").IncomingMessage & {
+        atlaas_is_https: boolean;
+        atlaas_method: string;
+        atlaas_http_mode: "https" | "http";
+        atlaas_uri: string;
+        atlaas_uri_array: string[];
+        atlaas_query_param: string;
+        atlaas_query_params_object: {
+            [k: string]: string;
+        };
+        atlaas_method_params: () => {
+            [k: string]: string;
+        };
+    }>;
+    /**
+     * @type {ReturnType<import('./response_.mjs').response_>}
+     */
+    response: ReturnType<typeof import("./response_.mjs").response_>;
     /**
      * @private
      * @param {string} curent__

@@ -27,9 +27,15 @@
  * - it contains methods or constructor to help you in common scenarios;
  * ## singleton
  * - any class prefixed with "__" are singleton, the instance can be accessed from `_Routes[anyMethods]` via class static property `ClassName.__`
+ * ## setting_class
+ * - extends the class and modify the property which are prefixed with "_" if neccessary
  */
 
 import { html } from './src/html.export.mjs';
+import { htmlReturn } from './src/htmlReturn.export.mjs';
+import { mwInputs } from './src/mwInputs.export.mjs';
+import { req } from './src/req.export.mjs';
+import { res } from './src/res.export.mjs';
 import { _AppRegex } from './src/_AppRegex.mjs';
 import { _Cors } from './src/_Cors.mjs';
 import { _FileServer } from './src/_FileServer.mjs';
@@ -41,11 +47,29 @@ import { _Routes } from './src/_Routes.mjs';
 import { _RouteWithMapResources } from './src/_RouteWithMapResources.mjs';
 import { _RouteWithMapResourcesAndMiddleware } from './src/_RouteWithMapResourcesAndMiddleware.mjs';
 import { _RouteWithMiddleware } from './src/_RouteWithMiddleware.mjs';
-import { _SQLiteRateLimiter } from './src/_SQLiteRateLimiter.mjs';
 import { __atlaAS } from './src/__atlaAS.mjs';
 import { __Env } from './src/__Env.mjs';
 import { __NodeServer } from './src/__NodeServer.mjs';
-import { __Request } from './src/__Request.mjs';
-import { __Response } from './src/__Response.mjs';
 import { __Settings } from './src/__Settings.mjs';
-export { html, _AppRegex, _Cors, _FileServer, _FollowUpParams, _FunctionHelpers, _MapResources, _Middleware, _Routes, _RouteWithMapResources, _RouteWithMapResourcesAndMiddleware, _RouteWithMiddleware, _SQLiteRateLimiter, __atlaAS, __Env, __NodeServer, __Request, __Response, __Settings };
+import { __SQLite3 } from './src/__SQLite3.mjs';
+
+/**
+ * @typedef {(req: __atlaAS["request"], res: __atlaAS["response"], next: (pass_message?: any) => any) => (void|Promise<void>)} standard_mw_
+ * @typedef {(err:any, req: __atlaAS["request"], res: __atlaAS["response"], next: (pass_message?: any) => any) =>(void|Promise<void>)} read_error_
+ */
+/**
+ * @description
+ * type helper for route_method
+ * ```js
+ * /**
+ *  * @typedef {(mode:mwInputs.mw_chain_helper)=>Promise<boolean>} mw_method
+ *  * - returns true or awaited chains return value;
+ *  * @typedef {(...uri_inputs:string[])=>Promise<string>} route_get_method
+ *  * - each of uri_input must never have default value;
+ *  * @typedef {(...uri_inputs:string[])=>Promise<void>} route_method
+ *  * - each of uri_input must never have default value;
+ *  *[blank]/
+ * ```
+ */
+
+export { html, htmlReturn, mwInputs, req, res, _AppRegex, _Cors, _FileServer, _FollowUpParams, _FunctionHelpers, _MapResources, _Middleware, _Routes, _RouteWithMapResources, _RouteWithMapResourcesAndMiddleware, _RouteWithMiddleware, __atlaAS, __Env, __NodeServer, __Settings, __SQLite3 };

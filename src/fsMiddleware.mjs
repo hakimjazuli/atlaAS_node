@@ -6,7 +6,7 @@ import { __atlaAS } from './__atlaAS.mjs';
 import { __Settings } from './__Settings.mjs';
 import { _FunctionHelpers } from './_FunctionHelpers.mjs';
 import { _Middleware } from './_Middleware.mjs';
-import { __Request } from './__Request.mjs';
+import { mwInputs } from './mwInputs.export.mjs';
 
 export class fsMiddleware {
 	/**
@@ -56,7 +56,7 @@ export class fsMiddleware {
 			path_join(__atlaAS.__.app_root, __Settings.__._routes_path)
 		);
 		try {
-			const stats = stat_sync(mw);
+			const stats = stat_sync(`${mw}${__Settings.__.route_mw_ext}`);
 			if (!stats.isFile()) {
 				return true;
 			}
@@ -67,10 +67,10 @@ export class fsMiddleware {
 		if (!mw_ref) {
 			return true;
 		}
-		const mw_instance = new mw_ref.default();
+		const mw_instance = new mw_ref();
 		if (mw_instance instanceof _Middleware) {
 			__atlaAS.__.assign_query_param_to_class_property(mw_instance);
-			return await mw_instance.mw(__Request.__.method);
+			return await mw_instance.mw(mwInputs.mw_chain_helper);
 		}
 		return true;
 	};

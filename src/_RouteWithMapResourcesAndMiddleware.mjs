@@ -1,5 +1,6 @@
 // @ts-check
 
+import { __Settings } from './__Settings.mjs';
 import { _RouteWithMapResources } from './_RouteWithMapResources.mjs';
 
 /**
@@ -11,13 +12,9 @@ import { _RouteWithMapResources } from './_RouteWithMapResources.mjs';
  */
 export class _RouteWithMapResourcesAndMiddleware extends _RouteWithMapResources {
 	/**
-	 * @param {string} method
-	 * @returns {Promise<boolean>}
+	 * @type {import('./route_method.type.mjs').mw_method}
 	 */
-	mw = async (method) => {
-		/**
-		 * mock return;
-		 */
-		return true;
+	mw = async () => {
+		return false;
 	};
 }

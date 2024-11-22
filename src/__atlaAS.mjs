@@ -5,8 +5,6 @@ import { fileURLToPath } from 'url';
 import path, { join as path_join } from 'path';
 import { queueFIFO } from './queueFIFO.mjs';
 import { __NodeServer } from './__NodeServer.mjs';
-import { __Request } from './__Request.mjs';
-import { __Response } from './__Response.mjs';
 import { __Settings } from './__Settings.mjs';
 import { _FunctionHelpers } from './_FunctionHelpers.mjs';
 
@@ -19,6 +17,7 @@ import { _FunctionHelpers } from './_FunctionHelpers.mjs';
  * new __atlaAS({
  * 	settings: __Settings, // extends from [__Settings](#__settings)
  * 	env: __Env, // extends from [__Env](#__env)
+ * 	sqlite3: __Sqlite3, // extends from [__Sqlite3](#__sqlite3)
  * 	...options
  * });
  * ```
@@ -46,15 +45,26 @@ export class __atlaAS {
 	static is_valid_port = (port) => {
 		return Number.isInteger(port) && port >= 0 && port <= 65535;
 	};
+	do_not_response_with_end = false;
+	/**
+	 * @param {any} val
+	 */
+	end_ = (val) => {
+		if (this.response.writableEnded || this.do_not_response_with_end) {
+			return;
+		}
+		this.response.end(val);
+	};
 	/**
 	 * @param {Object} a0
 	 * @param {typeof import('./__Settings.mjs').__Settings} a0.settings
 	 * @param {typeof import('./__Env.mjs').__Env} a0.env
+	 * @param {typeof import('./__SQLite3.mjs').__SQLite3} [a0.sqlite3]
 	 * @param {number} [a0.overwrite_port]
 	 * - undefined: dynamic route call;
 	 * - _RouteList: allow for bundling, make sure to overwrite __Settings._base_identifier to uppermost dir name of the bundled file(before root);
 	 */
-	constructor({ settings, env, overwrite_port = undefined }) {
+	constructor({ settings, env, sqlite3, overwrite_port = undefined }) {
 		if (__atlaAS.__ !== undefined) {
 			return;
 		}
@@ -69,12 +79,27 @@ export class __atlaAS {
 		} else {
 			this.app_root = this.get_base(fileURLToPath(import.meta.url).replace('file://', ''));
 		}
+		if (sqlite3) {
+			new sqlite3();
+		}
 		new queueFIFO();
 		if (overwrite_port && __atlaAS.is_valid_port(overwrite_port)) {
 			__Settings.__._default_port = overwrite_port;
 		}
 		new __NodeServer().start_server(overwrite_port);
 	}
+	/**
+	 * @type {any}
+	 */
+	current_error;
+	/**
+	 * @type {ReturnType<import('./request_.mjs').request_>}
+	 */
+	request;
+	/**
+	 * @type {ReturnType<import('./response_.mjs').response_>}
+	 */
+	response;
 	/**
 	 * @private
 	 * @param {string} curent__
@@ -103,46 +128,63 @@ export class __atlaAS {
 		query_parameters = {},
 		inherit_query_parameters = true
 	) => {
-		const request = __Request.__;
 		const uri_array = route_path
 			.replace(__Settings.__._routes_path, '')
 			.replace('//', '/')
-			.replace(`.${__Settings.__._system_file[0]}`, '')
+			.replace(`.${__Settings.__._system_file}`, '')
 			.split('/')
 			.filter((str) => str !== '');
 		uri_array.push(...uri_input);
+		const request = this.request;
 		if (inherit_query_parameters) {
-			query_parameters = Object.assign(request.query_params_array, query_parameters);
+			query_parameters = Object.assign(
+				request.atlaas_query_params_object ?? {},
+				query_parameters
+			);
 		}
 		const reseter = _FunctionHelpers.callable_collections(
 			(() => {
-				const temp_method = `${__Request.__.method}`;
-				__Request.__.method = 'get';
-				return () => (__Request.__.method = temp_method);
+				const temp_method = `${
+					/**
+					 *  to make sure it's copying the value instead of the reference
+					 */
+					request.atlaas_method
+				}`;
+				request.atlaas_method = 'get';
+				return () => (request.atlaas_method = temp_method);
 			})(),
 			(() => {
-				const temp_uri_array = [...__Request.__.uri_array];
-				__Request.__.uri_array = uri_array;
-				return () => (__Request.__.uri_array = temp_uri_array);
+				const temp_uri_array = [
+					/**
+					 *  to make sure it's copying the value instead of the reference
+					 */
+					...request.atlaas_uri_array,
+				];
+				request.atlaas_uri_array = uri_array;
+				return () => (request.atlaas_uri_array = temp_uri_array);
 			})(),
 			(() => {
-				const temp_query_params_array = Object.assign({}, __Request.__.query_params_array);
-				__Request.__.query_params_array = query_parameters;
-				return () => (__Request.__.query_params_array = temp_query_params_array);
+				const temp_query_params_array = Object.assign(
+					/**
+					 *  to make sure it's copying the value instead of the reference
+					 */
+					{},
+					request.atlaas_query_params_object
+				);
+				request.atlaas_query_params_object = query_parameters;
+				return () => (request.atlaas_query_params_object = temp_query_params_array);
 			})()
 		);
 		const result = await __NodeServer.__.fs_router.render(false);
 		reseter();
-		if (typeof result === 'string') {
-			return result;
-		}
+		return result;
 	};
 	/**
 	 * @param {import('./_Routes.mjs')._Routes|
 	 * import('./_Middleware.mjs')._Middleware} class_instance
 	 */
 	assign_query_param_to_class_property = (class_instance) => {
-		const query_param = __Request.__.query_params_array;
+		const query_param = this.request.atlaas_query_params_object;
 		for (const name in query_param) {
 			const value = query_param[name];
 			if (name in class_instance) {
@@ -163,26 +205,29 @@ export class __atlaAS {
 	) => {
 		location = location
 			.replace('/index', '/')
-			.replace(`.${__Settings.__._system_file[0]}`, '')
+			.replace(`.${__Settings.__._system_file}`, '')
 			.replace(__Settings.__._routes_path, '')
 			.replace(/\/+/g, '/');
 		if (url_input.length >= 1) {
 			location = path_join(location, ...url_input);
 		}
+		const response = __atlaAS.__.response;
 		if (use_client_side_routing) {
-			__Response.__.json().end(
+			response.atlaas_json();
+			this.end_(
 				JSON.stringify({
 					[__Settings.__._client_reroute_key]: location,
 				})
 			);
 			return;
 		}
-		const req = __Request.__.request;
-		const host = req.headers.host || `${req.socket.localAddress}:${req.socket.localPort}`;
-		const protocol = req.headers['x-forwarded-proto'] || 'http';
+		const requset = this.request;
+		const host =
+			requset.headers.host || `${requset.socket.localAddress}:${requset.socket.localPort}`;
+		const protocol = requset.headers['x-forwarded-proto'] || 'http';
 		location = `${protocol}://${path_join(host ?? '', location)}`;
-		__Response.__.response.writeHead(302, /** code to reroute */ { location });
-		__Response.__.response.end(message);
+		response.writeHead(302, /** code to reroute */ { location });
+		this.end_(message);
 	};
 	/**
 	 * @param {number} code
@@ -253,7 +298,7 @@ export class __atlaAS {
 				inherit_query_parameter
 			);
 			if (typeof result === 'string') {
-				__Response.__.response.end(result);
+				this.end_(result);
 			}
 		} else {
 			fallback(query_parameter);
@@ -268,7 +313,7 @@ export class __atlaAS {
 	input_match = (regex, input_name) => {
 		const __nodeserver = __NodeServer.__;
 		if (__nodeserver.fs_router.form_s_input_param === null) {
-			__nodeserver.fs_router.form_s_input_param = __Request.__.method_params();
+			__nodeserver.fs_router.form_s_input_param = this.request.atlaas_method_params();
 		}
 		return regex.test(__nodeserver.fs_router.form_s_input_param[input_name]);
 	};

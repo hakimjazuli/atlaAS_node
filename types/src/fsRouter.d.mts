@@ -22,7 +22,7 @@ export class fsRouter extends fsMiddleware {
     /**
      * @param {boolean} is_real_route
      */
-    render: (is_real_route?: boolean) => Promise<string>;
+    render: (is_real_route?: boolean) => Promise<string | false>;
     /**
      * @private
      * @return {boolean}

@@ -5,6 +5,16 @@
  */
 export class _FileServer {
     /**
+     * @param {Object} options
+     * @param {string} options.prefix
+     * @param {string} options.content
+     * @return {string}
+     */
+    static log_to_file: ({ prefix, content }: {
+        prefix: string;
+        content: string;
+    }) => string;
+    /**
      * @param {string} absolute_path
      */
     static get_string: (absolute_path: string) => string;

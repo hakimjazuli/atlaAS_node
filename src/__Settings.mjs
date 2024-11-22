@@ -1,13 +1,14 @@
 // @ts-check
 
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join as path_join } from 'path';
+import { fileURLToPath } from 'url';
+import { realpathSync } from 'fs';
 import { __atlaAS } from './__atlaAS.mjs';
 import { __Env } from './__Env.mjs';
 
 /**
  * @description
  * - is a [singleton](#singleton)
+ * - is a [setting_class](#setting_class)
  * - modify class property on the extended class to set the value;
  */
 export class __Settings {
@@ -20,39 +21,29 @@ export class __Settings {
 	_allow_routes_caching = true;
 
 	_routes_path = 'routes';
-	_system_file = ['mjs'];
+	_system_file = 'mjs';
 	_client_reroute_key = 'reroute';
 	_routes_errors_prefix = 'errors';
 	_use_stream = true;
 	_app_log = 'atla-as-log';
+
 	/**
-	 * @private
 	 * @type {string|undefined}
 	 */
 	log_dir = undefined;
 	/**
-	 * @param {Object} options
-	 * @param {string} options.prefix
-	 * @param {string} options.content
+	 * @type {string}
 	 */
-	log_to_file = ({ prefix, content }) => {
-		let log_dir = this.log_dir;
-		if (!log_dir) {
-			log_dir = this.log_dir = path_join(__atlaAS.__.app_root, 'logs');
-		}
-		if (!existsSync(log_dir)) {
-			mkdirSync(log_dir, { recursive: true });
-		}
-		const logPath = path_join(log_dir, `${prefix}-${this._app_log}-${Date.now()}.json`);
-		writeFileSync(logPath, content);
-		console.log(`Log written to: ${logPath}`);
-	};
+	route_mw_ext;
+
 	/**
-	 * @private
 	 * @readonly
 	 */
 	middleware_name_ = 'mw';
-	middleware_name = () => this.middleware_name_;
+	/**
+	 * @type {string}
+	 */
+	resolved_path;
 	/**
 	 * @returns {[boolean,number]}
 	 */
@@ -76,5 +67,9 @@ export class __Settings {
 			return;
 		}
 		__Settings.__ = this;
+		const resolvedPath = new URL('../sqls', import.meta.url);
+		const filePath = fileURLToPath(resolvedPath);
+		this.resolved_path = realpathSync(filePath);
+		this.route_mw_ext = `.${this._system_file}`;
 	}
 }

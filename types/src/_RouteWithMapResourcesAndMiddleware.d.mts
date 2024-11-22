@@ -7,9 +7,8 @@
  */
 export class _RouteWithMapResourcesAndMiddleware extends _RouteWithMapResources {
     /**
-     * @param {string} method
-     * @returns {Promise<boolean>}
+     * @type {import('./route_method.type.mjs').mw_method}
      */
-    mw: (method: string) => Promise<boolean>;
+    mw: import("./route_method.type.mjs").mw_method;
 }
 import { _RouteWithMapResources } from './_RouteWithMapResources.mjs';

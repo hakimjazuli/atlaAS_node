@@ -8,14 +8,4 @@ import { _MapResources } from './_MapResources.mjs';
  * - extended class from [_MapResources](#_mapresources);
  * - also functions as [_Routes](#_routes);
  */
-export class _RouteWithMapResources extends _MapResources {
-	/**
-	 * @returns {Promise<any>}
-	 */
-	get = async () => {};
-	/**
-	 * @param {string[]} map
-	 * @returns {Promise<any>}
-	 */
-	map_resources = async (...map) => {};
-}
+export class _RouteWithMapResources extends _MapResources {}

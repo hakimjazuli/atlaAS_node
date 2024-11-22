@@ -51,7 +51,7 @@ export class __NodeServer {
     /**
      * @param {...any} errors
      */
-    close_server: (...errors: any[]) => void;
+    close_server: (...errors: any[]) => never;
 }
 import http from 'http';
 import { fsRouter } from './fsRouter.mjs';

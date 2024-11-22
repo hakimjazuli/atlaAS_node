@@ -6,9 +6,8 @@
  */
 export class _RouteWithMiddleware extends _Routes {
     /**
-     * @param {string} method
-     * @returns {Promise<boolean>}
+     * @type {import('./route_method.type.mjs').mw_method}
      */
-    mw: (method: string) => Promise<boolean>;
+    mw: import("./route_method.type.mjs").mw_method;
 }
 import { _Routes } from './_Routes.mjs';

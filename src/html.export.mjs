@@ -1,16 +1,19 @@
 // @ts-check
 
-import { htmlReturn } from './htmlReturn.mjs';
+import { htmlReturn } from './htmlReturn.export.mjs';
 
 /**
  * @description
- * - helper function to generate html string asynchronously;
+ * - helper function to generate html string;
  * - combine with `IDE` extentions for emet with our [recomendations](#recomendations);
- */
-/**
- * @param {TemplateStringsArray} strings
- * @param {string[]} values
- * @returns {Promise<htmlReturn>}
+ * ```js
+ * /**
+ * * @param {TemplateStringsArray} strings
+ * * @param {string[]} values
+ * * @returns {Promise<htmlReturn>}
+ * *[blank]/
+ * ```
+ * - returns [htmlReturnInstance](#htmlreturn)
  */
 export const html = async (strings, ...values) => {
 	let result = '';

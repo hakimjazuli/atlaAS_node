@@ -19,11 +19,21 @@ you might need to install extentions/linters to help you with the `html` templat
 - it contains methods or constructor to help you in common scenarios;
 ## singleton
 - any class prefixed with "__" are singleton, the instance can be accessed from `_Routes[anyMethods]` via class static property `ClassName.__`
+## setting_class
+- extends the class and modify the property which are prefixed with "_" if neccessary
 
 
 <h2 id="exported-api-and-type-list">exported-api-and-type-list</h2>
 
 - [html](#html)
+
+- [htmlReturn](#htmlreturn)
+
+- [req](#req)
+
+- [res](#res)
+
+- [route_method](#route_method)
 
 - [_AppRegex](#_appregex)
 
@@ -47,32 +57,52 @@ you might need to install extentions/linters to help you with the `html` templat
 
 - [_RouteWithMiddleware](#_routewithmiddleware)
 
-- [_SQLiteRateLimiter](#_sqliteratelimiter)
-
 - [__atlaAS](#__atlaas)
 
 - [__Env](#__env)
 
 - [__NodeServer](#__nodeserver)
 
-- [__Request](#__request)
-
-- [__Response](#__response)
-
 - [__Settings](#__settings)
+
+- [__SQLite3](#__sqlite3)
 
 <h2 id="html">html</h2>
 
+- helper function to generate html string;- combine with `IDE` extentions for emet with our [recomendations](#recomendations);```js/*** @param {TemplateStringsArray} strings* @param {string[]} values* @returns {Promise<htmlReturn>}*/```- returns [htmlReturnInstance](#htmlreturn)
+
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
-- helper function to generate html string asynchronously;- combine with `IDE` extentions for emet with our [recomendations](#recomendations);
+
+<h2 id="htmlreturn">htmlReturn</h2>
+
+- `htmlReturnInstance` have methods that can be called to be used as `return value` of [_Routes](#_routes) `getMethod`;
+
+*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
+
+
+<h2 id="req">req</h2>
+
+```js/*** @returns {__atlaAS["request"]}* - current `atlaAS` `http.IncomingMessage` instanse*/```- use this to get `returns value` outside `mw` `scope`;
+
+*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
+
+
+<h2 id="res">res</h2>
+
+```js/*** @returns {__atlaAS["response"]}* - current `atlaAS` `http.ServerResponse` instanse*/```- use this to get `returns value` outside `mw` `scope`;
+
+*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
+
+
+<h2 id="route_method">route_method</h2>
+
+type helper for route_method```js/** * @typedef {(mode:mwInputs.mw_chain_helper)=>Promise<boolean>} mw_method * - returns true or awaited chains return value; * @typedef {(...uri_inputs:string[])=>Promise<string>} route_get_method * - each of uri_input must never have default value; * @typedef {(...uri_inputs:string[])=>Promise<void>} route_method * - each of uri_input must never have default value; */```
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
 <h2 id="_appregex">_AppRegex</h2>
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 - is a [helper class](#helper_class);- collection of usefull regex to filter strings;
 
@@ -81,16 +111,12 @@ you might need to install extentions/linters to help you with the `html` templat
 
 <h2 id="_cors">_Cors</h2>
 
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
 - is a [helper class](#helper_class);- `allow` incoming `cors` connections with filters;
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
 <h2 id="_fileserver">_FileServer</h2>
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 - is a [helper class](#helper_class);- static `methods` to handle `fileSystem` serving;
 
@@ -99,16 +125,12 @@ you might need to install extentions/linters to help you with the `html` templat
 
 <h2 id="_followupparams">_FollowUpParams</h2>
 
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
 - is a [helper class](#helper_class);- class helper for `__atlaAS.__.validate_params` `argument`;
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
 <h2 id="_functionhelpers">_FunctionHelpers</h2>
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 - is a [helper class](#helper_class);- collection of static methods, originally used for library internals functionality, but it might be usefull for general uses;
 
@@ -117,8 +139,6 @@ you might need to install extentions/linters to help you with the `html` templat
 
 <h2 id="_mapresources">_MapResources</h2>
 
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
 - is a [helper class](#helper_class);- extended class from [_Routes](#_routes);- serve files inside named folder;> - some_route.mjs> - assets.mjs> - assets(dir)> > - test.txt> > - nested(dir)> > > - test2.txt```js// /routes/assets.mjsexport default class extends _MapResources {}```
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
@@ -126,25 +146,19 @@ you might need to install extentions/linters to help you with the `html` templat
 
 <h2 id="_middleware">_Middleware</h2>
 
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-- is a [helper class](#helper_class);- extends this to `mw.mjs` on a folder, that folder and it's subfolders will have this `mw` method called as middleware;- `_Routes` class that also acts as middleware, it's `mw` method will be called `only` when that specific `routes` is requested, no matter which http method is being called;```js// /routes/api/mw.jsexport default class extends _Middleware {	mw = (lower_case_http_method) => {		// return boolean		// true to allow to proceed to next method calls;		// false to stop method calls;		// you can also uses `__Response.__.response` to determine response before returning; }}``````js// /routes/index.mjsexport default class extends _RouteWithMiddleware {	mw = () => {		// the same with above;		// however it also can have method to call on its own if needed; } get = () => {};}```
+- is a [helper class](#helper_class);- extends this to `mw.mjs` on a folder, that folder and it's subfolders will have this `mw` method called as middleware;- `_Routes` class that also acts as middleware, it's `mw` method will be called `only` when that specific `routes` is requested, no matter which http method is being called;```js// /routes/api/mw.js// in wich case it will be called on any request to '/api/..' and all of it's sub path;export default class extends _Middleware {	/** @type {import('@html_first/atla-as_node').mw_method} */	mw = async ({ mw, mw_err, chains }) => {		// return true; // you need to manually add return boolean when using `_Middleware` derivative;		return await chains(...		/**		 * - generate middleware callback:		 * > - mw : (req, res, next) => (void|Promise<void>);		 * > - mw_err : (err, req, res, next) => (void|Promise<void>);		 * - both are only functions as typehelper;		 * - if your middleware are structured like either of that, you can just write the reference;		 */		);};}``````js// /routes/index.mjs// it will be called only on request to uri root ('/index', '/' or '')export default class extends _RouteWithMiddleware {// the same with above;	mw = async ({ ...options }) => {};// however it also can have http_method of it's own to call, if needed; get = async () => {};}```- this middleware callback are compliance with js `middleware architecture/pattern`, it has `request`, `response`, `next` parameter,> - `request` are instance extended from `http.IncomingMessage`;> - `response` are instance extended from `http.ServerResponse`;> - we added to `request` and `reponse` `method`/`property` prefixed with `atlaas_`;> - `next` are callback to allow to proceed to next callback (middleware or route);> > - by default it will not be called, if you use `_Middleware` and it's derivatives, without manually calling it, the request will imediately be blocked from calling next callback;
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
 <h2 id="_routes">_Routes</h2>
 
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-- is a [helper class](#helper_class);- extends this class or any class prefixed with "_Route" to register that route as ` system router`;```jsexport default class extends _Routes{	get = (		...url_inputs		// all inputs is in string type;		// should never have default value, as it will mess with length of the input detection;	) => {	// compose the with our singleton and helper class, then by using `__Response.__.response` you can send response to the client;	};}```
+- is a [helper class](#helper_class);- extends this class or any class prefixed with "_Route" to register that route as ` system router`;```jsexport default class extends _Routes{	/** @type {import('@html_first/atla-as_node').route_get_method} */// use type route_method instead for non get method	get = (		...url_inputs		// all inputs is in string type;		// should never have default value, as it will mess with length of the input detection;	) => {	};}```
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
 <h2 id="_routewithmapresources">_RouteWithMapResources</h2>
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 - is a [helper class](#helper_class);- extended class from [_MapResources](#_mapresources);- also functions as [_Routes](#_routes);
 
@@ -153,8 +167,6 @@ you might need to install extentions/linters to help you with the `html` templat
 
 <h2 id="_routewithmapresourcesandmiddleware">_RouteWithMapResourcesAndMiddleware</h2>
 
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
 - is a [helper class](#helper_class);- extended class from [_MapResources](#_mapresources);- also functions as [_Routes](#_routes);- also has [mw](#_middleware) method that functions as middleware;
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
@@ -162,71 +174,41 @@ you might need to install extentions/linters to help you with the `html` templat
 
 <h2 id="_routewithmiddleware">_RouteWithMiddleware</h2>
 
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
 - is a [helper class](#helper_class);- extended class from [_MapResources](#_mapresources);- also has [mw](#_middleware) method that functions as middleware;
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-
-<h2 id="_sqliteratelimiter">_SQLiteRateLimiter</h2>
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-- is a [helper class](#helper_class);- access limiter using `sqlite3`, call the method on a middleware to limit overall access to the site;
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
 <h2 id="__atlaas">__atlaAS</h2>
 
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-- is a [singleton](#singleton)- use this class to instantiate the server```js// /backend/atlaAS.mjsnew __atlaAS({	settings: __Settings, // extends from [__Settings](#__settings)	env: __Env, // extends from [__Env](#__env)	...options});```- call using bun or node```shellbun --watch ./backend/atlaAS.mjsnpm run ./backend/atlaAS.mjs -- --watch```- it's recomended to save the script on the package.json for convenience
+- is a [singleton](#singleton)- use this class to instantiate the server```js// /backend/atlaAS.mjsnew __atlaAS({	settings: __Settings, // extends from [__Settings](#__settings)	env: __Env, // extends from [__Env](#__env)	sqlite3: __Sqlite3, // extends from [__Sqlite3](#__sqlite3)	...options});```- call using bun or node```shellbun --watch ./backend/atlaAS.mjsnpm run ./backend/atlaAS.mjs -- --watch```- it's recomended to save the script on the package.json for convenience
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
 <h2 id="__env">__Env</h2>
 
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-- is a [singleton](#singleton)- placeholder for for environtmental values;- always put the this extended class on `.ignore` on your shared code management;- modify class property on the extended class to set the value;
+- is a [singleton](#singleton)- is a [setting_class](#setting_class)- placeholder for for environtmental values;- always put the this extended class on `.ignore` on your shared code management;- modify class property on the extended class to set the value;
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
 <h2 id="__nodeserver">__NodeServer</h2>
 
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
 - is a [singleton](#singleton)- it's for library internal, however it contains properties and methods, that might be usefull for general monitoring;
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-
-<h2 id="__request">__Request</h2>
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-- is a [singleton](#singleton)- helper for node http["IncomingMessage"];
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-
-<h2 id="__response">__Response</h2>
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-- is a [singleton](#singleton)- helper for node http["ServerResponse"];
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
 
 <h2 id="__settings">__Settings</h2>
 
+- is a [singleton](#singleton)- is a [setting_class](#setting_class)- modify class property on the extended class to set the value;
+
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 
-- is a [singleton](#singleton)- modify class property on the extended class to set the value;
+
+<h2 id="__sqlite3">__SQLite3</h2>
+
+- is a [singleton](#singleton)- is a [setting_class](#setting_class)- custom `sqlite3.Database` instantiator using `__SQLite3.create`, make sure it's called and exported after `__atlaAS` instantiation, as it needs `__atlaAS` instance property;- `sqlite3` helper for common functionality using internals db settings(it's an optional feature, so if you are not inputing it as one of the `__atlaAS` options, you cannot use this functionality):> - rate limiter;> - session handling;> - log;> - quick db using `__SQLite3.__.db`, it's `sqlite3.Database` from `sqlite` `npm module`, you can manually query things if needed;
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>

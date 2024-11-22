@@ -2,8 +2,6 @@
 
 import { statSync as stat_sync } from 'fs';
 import { join as path_join } from 'path';
-import { __Request } from './__Request.mjs';
-import { __Response } from './__Response.mjs';
 import { __Settings } from './__Settings.mjs';
 import { __atlaAS } from './__atlaAS.mjs';
 import { _FunctionHelpers } from './_FunctionHelpers.mjs';
@@ -15,13 +13,15 @@ import { _RouteWithMapResources } from './_RouteWithMapResources.mjs';
 import { _FileServer } from './_FileServer.mjs';
 import { _Middleware } from './_Middleware.mjs';
 import { fsMiddleware } from './fsMiddleware.mjs';
+import { mwInputs } from './mwInputs.export.mjs';
 
 export class fsRouter extends fsMiddleware {
 	constructor() {
 		super();
 	}
 	run = async () => {
-		await this.render();
+		const ret = await this.render();
+		__atlaAS.__.end_(ret);
 	};
 	/**
 	 * @private
@@ -42,7 +42,7 @@ export class fsRouter extends fsMiddleware {
 	 * @private
 	 */
 	handle_mw = async () => {
-		const middleware_name = __Settings.__.middleware_name();
+		const middleware_name = __Settings.__.middleware_name_;
 		this.current_middleware = path_join(this.current_route, middleware_name);
 		return await this.check_mw();
 	};
@@ -51,7 +51,7 @@ export class fsRouter extends fsMiddleware {
 	 */
 	render = async (is_real_route = true) => {
 		const __setting = __Settings.__;
-		const uri_array = __Request.__.uri_array;
+		const uri_array = __atlaAS.__.request.atlaas_uri_array;
 		this.request_length = uri_array.length;
 		this.current_route = path_join(__atlaAS.__.app_root, __setting._routes_path);
 		let routes_length = 0;
@@ -86,12 +86,9 @@ export class fsRouter extends fsMiddleware {
 			__atlaAS.__.reroute_error(404);
 			return;
 		}
-		const result = await this.run_real_route(is_real_route);
-		if (result === false) {
-			__Response.__.response.end();
-		}
-		if (typeof result === 'string') {
-			return result;
+		const ret = await this.run_real_route(is_real_route);
+		if (ret !== true) {
+			return ret;
 		}
 	};
 	/**
@@ -100,7 +97,7 @@ export class fsRouter extends fsMiddleware {
 	 */
 	check_route = () => {
 		try {
-			const stats = stat_sync(`${this.current_route}.mjs`);
+			const stats = stat_sync(`${this.current_route}${__Settings.__.route_mw_ext}`);
 			if (!stats.isFile()) {
 				return false;
 			}
@@ -118,25 +115,26 @@ export class fsRouter extends fsMiddleware {
 	run_real_route = async (is_real_route) => {
 		const route = this.real_route;
 		const route_ref = await _FunctionHelpers.dynamic_import(route);
+		if (!route_ref) {
+			return false;
+		}
 		const route_instance = new route_ref(is_real_route);
 		if (route_instance instanceof _Routes) {
-			__atlaAS.__.assign_query_param_to_class_property(route_instance);
+			const atlaas = __atlaAS.__;
+			atlaas.assign_query_param_to_class_property(route_instance);
 			if (
 				route_instance instanceof _RouteWithMiddleware &&
-				!(await this.is_mw_allowed(
-					route,
-					async () => await route_instance.mw(__Request.__.method)
-				))
+				!(await this.is_mw_allowed(route, async () => {
+					return await route_instance.mw(mwInputs.mw_chain_helper);
+				}))
 			) {
 				return false;
 			}
 			if (await this.check_is_map_resources_or_mw_blocked(route, route_instance)) {
+				atlaas.do_not_response_with_end = true;
 				return true;
 			}
-			const result = await this.run_method_with_input_logic(route_instance);
-			if (typeof result === 'string') {
-				return result;
-			}
+			return await this.run_method_with_input_logic(route_instance);
 		}
 		return false;
 	};
@@ -148,17 +146,18 @@ export class fsRouter extends fsMiddleware {
 	 * - if map_resources || mw_blocked then retrurns true;
 	 */
 	check_is_map_resources_or_mw_blocked = async (route_full_path, route_instance) => {
-		if (!(route_instance instanceof _MapResources) || __Request.__.method !== 'get') {
+		const req = __atlaAS.__.request;
+		if (!(route_instance instanceof _MapResources) || req.atlaas_method !== 'get') {
 			return false;
 		}
-		const url_input = __Request.__.uri_array.slice(this.routes_length);
+		const url_input = req.atlaas_uri_array.slice(this.routes_length);
+		const res = __atlaAS.__.response;
 		if (url_input.length === 0) {
 			if (
 				route_instance instanceof _RouteWithMapResourcesAndMiddleware &&
-				!(await this.is_mw_allowed(
-					route_full_path,
-					async () => await route_instance.mw('get')
-				))
+				!(await this.is_mw_allowed(route_full_path, async () => {
+					return await route_instance.mw(mwInputs.mw_chain_helper);
+				}))
 			) {
 				/**
 				 * block from run_method_with_input_logic
@@ -172,10 +171,11 @@ export class fsRouter extends fsMiddleware {
 		}
 		if (
 			!(route_instance instanceof _RouteWithMapResourcesAndMiddleware) ||
-			(await this.is_mw_allowed(
-				route_full_path,
-				async () => await route_instance[__Settings.__.middleware_name()]('get')
-			))
+			(await this.is_mw_allowed(route_full_path, async () => {
+				return await route_instance[__Settings.__.middleware_name_](
+					mwInputs.mw_chain_helper
+				);
+			}))
 		) {
 			await route_instance.map_resources(...url_input);
 			_FileServer.serves(url_input, route_full_path);
@@ -195,17 +195,18 @@ export class fsRouter extends fsMiddleware {
 			__atlaAS.__.reroute_error(404);
 			return;
 		}
-		const url_inputs = __Request.__.uri_array.slice(-num_params);
-		const method = __Request.__.method;
+		const request = __atlaAS.__.request;
+		const url_inputs = request.atlaas_uri_array.slice(-num_params);
+		const method = request.atlaas_method;
 		if (!(method in route_instance)) {
 			__atlaAS.__.reroute_error(404);
 			return;
 		}
-		const result = await route_instance[__Request.__.method](...url_inputs);
+		const result = await route_instance[request.atlaas_method](...url_inputs);
 		if (!result || !route_instance.is_real_route) {
 			return result;
 		}
-		__Response.__.response.end(result);
+		return result;
 	};
 
 	/**

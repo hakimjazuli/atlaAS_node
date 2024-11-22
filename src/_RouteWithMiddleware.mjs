@@ -1,5 +1,6 @@
 // @ts-check
 
+import { __Settings } from './__Settings.mjs';
 import { _Middleware } from './_Middleware.mjs';
 import { _Routes } from './_Routes.mjs';
 
@@ -11,13 +12,9 @@ import { _Routes } from './_Routes.mjs';
  */
 export class _RouteWithMiddleware extends _Routes {
 	/**
-	 * @param {string} method
-	 * @returns {Promise<boolean>}
+	 * @type {import('./route_method.type.mjs').mw_method}
 	 */
-	mw = async (method) => {
-		/**
-		 * mock return;
-		 */
-		return true;
+	mw = async () => {
+		return false;
 	};
 }

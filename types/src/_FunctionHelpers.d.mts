@@ -17,10 +17,10 @@ export class _FunctionHelpers {
      */
     private static resolve_dynamic_import;
     /**
-     * @param {string} path
+     * @param {string} path_
      * @returns {Promise<Object|null>}
      */
-    static dynamic_import: (path: string) => Promise<any | null>;
+    static dynamic_import: (path_: string) => Promise<any | null>;
     /**
      * @param {_Routes} class_instance
      * @returns {number}

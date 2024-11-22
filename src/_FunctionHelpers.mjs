@@ -1,10 +1,9 @@
 // @ts-check
 
-import { join as path_join } from 'path';
 import { __atlaAS } from './__atlaAS.mjs';
 import { _Routes } from './_Routes.mjs';
 import { __Settings } from './__Settings.mjs';
-import { __Request } from './__Request.mjs';
+import { fileURLToPath } from 'url';
 
 /**
  * @description
@@ -31,23 +30,33 @@ export class _FunctionHelpers {
 		return imported;
 	};
 	/**
-	 * @param {string} path
+	 * @param {string} path_
 	 * @returns {Promise<Object|null>}
 	 */
-	static dynamic_import = async (path) => {
-		if (_FunctionHelpers.dynamic_import_cache.get(path)) {
-			return _FunctionHelpers.resolve_dynamic_import(path);
+	static dynamic_import = async (path_) => {
+		let logged_path = path_;
+		const route_mw_ext = __Settings.__.route_mw_ext;
+		if (!logged_path.endsWith(route_mw_ext)) {
+			logged_path = `${logged_path}${route_mw_ext}`;
 		}
-		const system_files = __Settings.__._system_file;
-		for (let i = 0; i < system_files.length; i++) {
-			const extention = system_files[i];
-			path = `${path}.${extention}`;
-			const result = await import(path).catch(async () => {
-				return await import(`file://${path}`).catch((err) => null);
-			});
-			if (result) {
-				return _FunctionHelpers.resolve_dynamic_import(path, result.default);
+		const ref = _FunctionHelpers.dynamic_import_cache.get(logged_path);
+		if (ref) {
+			return _FunctionHelpers.resolve_dynamic_import(logged_path, ref);
+		}
+		const extention = __Settings.__._system_file;
+		path_ = `${path_}.${extention}`;
+		let result;
+		try {
+			result = await import(fileURLToPath(path_));
+		} catch (_) {
+			try {
+				result = await import(fileURLToPath(`file://${path_}`));
+			} catch (_) {
+				return null;
 			}
+		}
+		if (result) {
+			return _FunctionHelpers.resolve_dynamic_import(path_, result.default);
 		}
 		return null;
 	};
@@ -56,7 +65,7 @@ export class _FunctionHelpers {
 	 * @returns {number}
 	 */
 	static url_input_length = (class_instance) => {
-		return class_instance[__Request.__.method].length;
+		return class_instance[__atlaAS.__.request.atlaas_method].length;
 	};
 	/**
 	 * @param {CallableFunction} callback

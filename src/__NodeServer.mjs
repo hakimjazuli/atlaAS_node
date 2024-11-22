@@ -1,5 +1,6 @@
 // @ts-check
 
+import os from 'os';
 import http from 'http';
 import process from 'process';
 import { __Settings } from './__Settings.mjs';
@@ -7,8 +8,11 @@ import { __Env } from './__Env.mjs';
 import { queueFIFO } from './queueFIFO.mjs';
 import { _QueueObjectFIFO } from '@html_first/simple_queue';
 import { fsRouter } from './fsRouter.mjs';
-import { __Response } from './__Response.mjs';
-import { __Request } from './__Request.mjs';
+import { response_ as response_ } from './response_.mjs';
+import { request_ } from './request_.mjs';
+import { _FileServer } from './_FileServer.mjs';
+import { __SQLite3 } from './__SQLite3.mjs';
+import { __atlaAS } from './__atlaAS.mjs';
 
 /**
  * @description
@@ -50,8 +54,8 @@ export class __NodeServer {
 	request_handler = (request, response) => {
 		queueFIFO.__.assign(
 			new _QueueObjectFIFO(async () => {
-				new __Request(request);
-				new __Response(response);
+				__atlaAS.__.request = request_(request);
+				__atlaAS.__.response = response_(response);
 				this.fs_router = new fsRouter();
 				await this.fs_router.run();
 			}, __Settings.__._default_debounce_ms)
@@ -102,24 +106,53 @@ export class __NodeServer {
 		if (addres) {
 			// @ts-ignore
 			console.log(`listen at: http://localhost:${addres.port}`);
+			const sqliteIntstance = __SQLite3.__;
+			if (sqliteIntstance) {
+				sqliteIntstance.log({
+					context: 'server-start',
+					message: JSON.stringify({
+						nodeVersion: process.version,
+						osType: os.type(),
+						osRelease: os.release(),
+						platform: process.platform,
+						arch: process.arch,
+						cpus: os.cpus(),
+						memory: {
+							totalMemory: os.totalmem(),
+							freeMemory: os.freemem(),
+						},
+						environmentVariables: process.env,
+						uptime: process.uptime(),
+					}),
+				});
+			}
 		}
+		process.on('SIGINT', this.close_server);
+		process.on('SIGTERM', this.close_server);
 		process.on('exit', this.close_server);
 		process.on('beforeExit', this.close_server);
 		process.on('uncaughtException', this.close_server);
-		process.on('SIGINT', this.close_server);
+		process.on('unhandledRejection', this.close_server);
 	};
 	is_running = true;
 	/**
 	 * @param {...any} errors
 	 */
 	close_server = (...errors) => {
-		if (!this.is_running) {
-			return;
+		try {
+			this.server.close();
+			const sqlite_instance = __SQLite3.__;
+			if (sqlite_instance) {
+				sqlite_instance.log({
+					context: 'close-server',
+					message: JSON.stringify({ ...errors }),
+				});
+			}
+			console.log({ stats: 'server closed', ...errors });
+			this.is_running = false;
+			process.exit(0);
+		} catch (error) {
+			process.exit(0);
 		}
-		this.server.close();
-		__Settings.__.log_to_file({ prefix: 'close-server', content: JSON.stringify({ errors }) });
-		this.is_running = false;
-		console.log({ stats: 'server closed' });
-		process.exit(1);
 	};
 }

@@ -1,13 +1,11 @@
 // @ts-check
 
 import mime from 'mime';
-import { statSync, createReadStream, readFileSync } from 'fs';
+import { statSync, createReadStream, readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join as path_join, extname, basename } from 'path';
 import { __Settings } from './__Settings.mjs';
 import { __atlaAS } from './__atlaAS.mjs';
 import { _FunctionHelpers } from './_FunctionHelpers.mjs';
-import { __Response } from './__Response.mjs';
-import { __Request } from './__Request.mjs';
 
 /**
  * @description
@@ -16,10 +14,38 @@ import { __Request } from './__Request.mjs';
  */
 export class _FileServer {
 	/**
+	 * @param {Object} options
+	 * @param {string} options.prefix
+	 * @param {string} options.content
+	 * @return {string}
+	 */
+	static log_to_file = ({ prefix, content }) => {
+		prefix = prefix
+			.replace(/[\/\\:*?"<>|]/g, '')
+			.replace(/\s+/g, '_')
+			.trim();
+		let log_dir = this.log_dir;
+		if (!log_dir) {
+			log_dir = this.log_dir = path_join(__atlaAS.__.app_root, 'logs');
+		}
+		if (!existsSync(log_dir)) {
+			mkdirSync(log_dir, { recursive: true });
+		}
+		const log_path = path_join(
+			log_dir,
+			`${prefix}-${__Settings.__._app_log}-${Date.now()}.json`
+		);
+		writeFileSync(log_path, content);
+		console.log(`Log written to: ${log_path}`);
+		return log_path;
+	};
+	/**
 	 * @param {string} absolute_path
 	 */
 	static get_string = (absolute_path) => {
-		absolute_path = path_join(__atlaAS.__.app_root, absolute_path);
+		if (absolute_path.startsWith('/')) {
+			absolute_path = path_join(__atlaAS.__.app_root, absolute_path);
+		}
 		try {
 			const content = readFileSync(absolute_path, { encoding: 'utf8' });
 			return content;
@@ -29,7 +55,7 @@ export class _FileServer {
 				stack: error.stack,
 				path: absolute_path,
 			};
-			__Settings.__.log_to_file({
+			this.log_to_file({
 				prefix: 'read-file-error',
 				content: JSON.stringify(errorDetails, null, 2),
 			});
@@ -82,11 +108,7 @@ export class _FileServer {
 	static page_resource_handler = (file, force_download = false) => {
 		const __settings = __Settings.__;
 		const file_ext = extname(file);
-		if (
-			_FunctionHelpers
-				.merge_unique_1d_array(__settings._system_file, ['mjs'])
-				.includes(file_ext)
-		) {
+		if (_FunctionHelpers.merge_unique_1d_array([__settings._system_file]).includes(file_ext)) {
 			return 'is_system_file';
 		}
 		try {
@@ -110,20 +132,21 @@ export class _FileServer {
 			this.download_force(filename);
 			return;
 		}
+		const response = __atlaAS.__.response;
 		const content_type = this.get_content_type(filename);
 		const fileSize = statSync(filename).size;
-		const range = __Request.__.request.headers['range'];
+		const range = __atlaAS.__.request.headers['range'];
 		if (range) {
 			const parts = range.replace(/bytes=/, '').split('-');
 			const start = parseInt(parts[0], 10);
 			const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
 			if (start >= fileSize || end >= fileSize) {
-				__Response.__.response.writeHead(416, {
+				response.writeHead(416, {
 					'Content-Range': `bytes */${fileSize}`,
 					'Content-Type': 'text/plain',
 				});
-				__Response.__.response.end('Requested range not satisfiable');
+				response.end('Requested range not satisfiable');
 				return;
 			}
 
@@ -131,33 +154,39 @@ export class _FileServer {
 			const fileStream = createReadStream(filename, { start, end });
 
 			content_type &&
-				__Response.__.response.writeHead(206, {
+				response.writeHead(206, {
 					'content-range': `bytes ${start}-${end}/${fileSize}`,
 					'accept-ranges': 'bytes',
 					'content-length': chunkSize,
 					'content-Type': content_type,
 				});
 
-			fileStream.pipe(__Response.__.response);
+			fileStream.pipe(response);
 			fileStream.on('error', (err) => {
-				console.error('File stream error:', err);
-				__Response.__.response.writeHead(500, { 'Content-Type': 'text/plain' });
-				__Response.__.response.end('Internal Server Error');
+				this.log_to_file({
+					prefix: 'file-stream-error',
+					content: JSON.stringify(err),
+				});
+				response.writeHead(500, { 'Content-Type': 'text/plain' });
+				response.end('Internal Server Error');
 			});
 			return;
 		}
 		const fileStream = createReadStream(filename);
-		__Response.__.response.setHeader('Content-Length', fileSize);
-		content_type && __Response.__.response.setHeader('Content-Type', content_type);
-		fileStream.pipe(__Response.__.response);
+		response.setHeader('Content-Length', fileSize);
+		content_type && response.setHeader('Content-Type', content_type);
+		fileStream.pipe(response);
 		fileStream.on('error', (err) => {
-			console.error('File stream error:', err);
-			__Response.__.response.writeHead(500, { 'Content-Type': 'text/plain' });
-			__Response.__.response.end('Internal Server Error');
+			this.log_to_file({
+				prefix: 'file-stream-error',
+				content: JSON.stringify(err),
+			});
+			response.writeHead(500, { 'Content-Type': 'text/plain' });
+			response.end('Internal Server Error');
 		});
 
 		fileStream.on('end', () => {
-			__Response.__.response.end();
+			response.end();
 		});
 	};
 	/**
@@ -170,7 +199,7 @@ export class _FileServer {
 			return;
 		}
 		const expires = _FileServer.unix_unit_to_days(days);
-		__Response.__.response
+		__atlaAS.__.response
 			.setHeader('Pragma', 'public')
 			.setHeader('Cache-Control', `max-age=${expires}`)
 			.setHeader('Expires', new Date(Date.now() + expires).toISOString() + expires);
@@ -192,12 +221,14 @@ export class _FileServer {
 		try {
 			file_size = statSync(filename).size;
 		} catch (err) {
-			console.error('Error reading file:', err);
+			this.log_to_file({
+				prefix: 'error-reading-file',
+				content: JSON.stringify(err),
+			});
 			return;
 		}
-		__Response.__.response
-			.setHeader('Accept-Ranges', 'bytes')
-			.setHeader('Content-Length', file_size);
+		const response = __atlaAS.__.response;
+		response.setHeader('Accept-Ranges', 'bytes').setHeader('Content-Length', file_size);
 		const file_ext = extname(filename);
 		let content_type;
 		switch (file_ext) {
@@ -351,7 +382,7 @@ export class _FileServer {
 				break;
 		}
 		// @ts-ignore
-		__Response.__.response.setHeader('Content-Type', content_type);
+		response.setHeader('Content-Type', content_type);
 		return content_type;
 	};
 	/**
@@ -361,7 +392,7 @@ export class _FileServer {
 	 */
 	static download_force = (path) => {
 		path = basename(path);
-		__Response.__.response
+		__atlaAS.__.response
 			.setHeader('Content-Type', 'aplication/octet-stream')
 			.setHeader('Content-Transfer-Encoding', 'Binary')
 			.setHeader('Content-disposition', `filename=${path}`);
