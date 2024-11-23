@@ -15,6 +15,10 @@ export class _RouteWithMapResourcesAndMiddleware extends _RouteWithMapResources 
 	 * @type {import('./routeMethod.type.mjs').mwMethod}
 	 */
 	mw = async () => {
+		console.warn({
+			classInstance: this.constructor.name,
+			error: 'mw method need to be manually created',
+		});
 		return false;
 	};
 }
