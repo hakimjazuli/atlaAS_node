@@ -1,5 +1,4 @@
 // @ts-check
-
 /**
  * generated using:
  * @see {@link https://www.npmjs.com/package/@html_first/js_lib_template | @html_first/js_lib_template}
@@ -30,39 +29,33 @@
  * ## setting_class
  * - extends the class and modify the property which are prefixed with "_" if neccessary
  */
-
-import { html } from './src/html.export.mjs';
-import { htmlReturn } from './src/htmlReturn.export.mjs';
-import { mwInputs } from './src/mwInputs.export.mjs';
-import { req } from './src/req.export.mjs';
-import { res } from './src/res.export.mjs';
-import { _AppRegex } from './src/_AppRegex.mjs';
-import { _Cors } from './src/_Cors.mjs';
-import { _FileServer } from './src/_FileServer.mjs';
-import { _FollowUpParams } from './src/_FollowUpParams.mjs';
-import { _FunctionHelpers } from './src/_FunctionHelpers.mjs';
-import { _MapResources } from './src/_MapResources.mjs';
-import { _Middleware } from './src/_Middleware.mjs';
-import { _Routes } from './src/_Routes.mjs';
-import { _RouteWithMapResources } from './src/_RouteWithMapResources.mjs';
-import { _RouteWithMapResourcesAndMiddleware } from './src/_RouteWithMapResourcesAndMiddleware.mjs';
-import { _RouteWithMiddleware } from './src/_RouteWithMiddleware.mjs';
-import { __atlaAS } from './src/__atlaAS.mjs';
-import { __Env } from './src/__Env.mjs';
-import { __NodeServer } from './src/__NodeServer.mjs';
-import { __Settings } from './src/__Settings.mjs';
-import { __SQLite3 } from './src/__SQLite3.mjs';
-
-/**
- * @typedef {(req: __atlaAS["request"], res: __atlaAS["response"], next: (pass_message?: any) => any) => (void|Promise<void>)} standard_mw_
- * @typedef {(err:any, req: __atlaAS["request"], res: __atlaAS["response"], next: (pass_message?: any) => any) =>(void|Promise<void>)} read_error_
- */
+export { html } from './src/html.export.mjs';
+export { htmlReturn } from './src/htmlReturn.export.mjs';
+export { mwInputs } from './src/mwInputs.export.mjs';
+export { req } from './src/req.export.mjs';
+export { res } from './src/res.export.mjs';
+export { _AppRegex } from './src/_AppRegex.mjs';
+export { _Cors } from './src/_Cors.mjs';
+export { _FileServer } from './src/_FileServer.mjs';
+export { _FollowUpParams } from './src/_FollowUpParams.mjs';
+export { _FunctionHelpers } from './src/_FunctionHelpers.mjs';
+export { _MapResources } from './src/_MapResources.mjs';
+export { _Middleware } from './src/_Middleware.mjs';
+export { _Routes } from './src/_Routes.mjs';
+export { _RouteWithMapResources } from './src/_RouteWithMapResources.mjs';
+export { _RouteWithMapResourcesAndMiddleware } from './src/_RouteWithMapResourcesAndMiddleware.mjs';
+export { _RouteWithMiddleware } from './src/_RouteWithMiddleware.mjs';
+export { __atlaAS } from './src/__atlaAS.mjs';
+export { __Env } from './src/__Env.mjs';
+export { __NodeServer } from './src/__NodeServer.mjs';
+export { __Settings } from './src/__Settings.mjs';
+export { __SQLite3 } from './src/__SQLite3.mjs';
 /**
  * @description
  * type helper for routeMethod
  * ```js
  * /**
- *  * @typedef {(mode:mwInputs.mw_chain_helper)=>Promise<boolean>} mwMethod
+ *  * @typedef {(mode:typeof import('./src/mwInputs.export.mjs').mwInputs["mw_chain_helper"])=>Promise<boolean>} mwMethod
  *  * - returns true or awaited chains return value;
  *  * @typedef {(...uri_inputs:string[])=>Promise<string>} routeGetMethod
  *  * - each of uri_input must never have default value;
@@ -70,6 +63,7 @@ import { __SQLite3 } from './src/__SQLite3.mjs';
  *  * - each of uri_input must never have default value;
  *  *[blank]/
  * ```
+ * @typedef {import('./src/__atlaAS.mjs').__atlaAS} __atlaAS_
+ * @typedef {(req: __atlaAS_["request"], res: __atlaAS_["response"], next: (pass_message?: any) => any) => (void|Promise<void>)} standard_mw_
+ * @typedef {(err:any, req: __atlaAS_["request"], res: __atlaAS_["response"], next: (pass_message?: any) => any) =>(void|Promise<void>)} read_error_
  */
-
-export { html, htmlReturn, mwInputs, req, res, _AppRegex, _Cors, _FileServer, _FollowUpParams, _FunctionHelpers, _MapResources, _Middleware, _Routes, _RouteWithMapResources, _RouteWithMapResourcesAndMiddleware, _RouteWithMiddleware, __atlaAS, __Env, __NodeServer, __Settings, __SQLite3 };

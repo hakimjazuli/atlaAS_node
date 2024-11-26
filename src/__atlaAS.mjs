@@ -45,15 +45,20 @@ export class __atlaAS {
 	static is_valid_port = (port) => {
 		return Number.isInteger(port) && port >= 0 && port <= 65535;
 	};
-	do_not_response_with_end = false;
 	/**
 	 * @param {any} val
 	 */
 	end_ = (val) => {
-		if (this.response.writableEnded || this.do_not_response_with_end) {
+		if (this.response.do_not_response_with_end) {
 			return;
 		}
-		this.response.end(val);
+		this.response.do_not_response_with_end = true;
+		if (val === true) {
+			val = undefined;
+		}
+		if (val) {
+			this.response.end(val);
+		}
 	};
 	/**
 	 * @param {Object} a0
@@ -77,7 +82,7 @@ export class __atlaAS {
 		if (__Settings.__._use_process_cwd_as_root) {
 			this.app_root = process.cwd();
 		} else {
-			this.app_root = this.get_base(fileURLToPath(import.meta.url).replace('file://', ''));
+			this.app_root = this.get_base(fileURLToPath(import.meta.url));
 		}
 		if (sqlite3) {
 			new sqlite3();

@@ -132,10 +132,11 @@ export class _FileServer {
 			this.download_force(filename);
 			return;
 		}
-		const response = __atlaAS.__.response;
+		const atlaAS = __atlaAS.__;
+		const response = atlaAS.response;
 		const content_type = this.get_content_type(filename);
 		const fileSize = statSync(filename).size;
-		const range = __atlaAS.__.request.headers['range'];
+		const range = atlaAS.request.headers['range'];
 		if (range) {
 			const parts = range.replace(/bytes=/, '').split('-');
 			const start = parseInt(parts[0], 10);
@@ -146,7 +147,7 @@ export class _FileServer {
 					'Content-Range': `bytes */${fileSize}`,
 					'Content-Type': 'text/plain',
 				});
-				response.end('Requested range not satisfiable');
+				atlaAS.end_('Requested range not satisfiable');
 				return;
 			}
 
@@ -168,7 +169,7 @@ export class _FileServer {
 					content: JSON.stringify(err),
 				});
 				response.writeHead(500, { 'Content-Type': 'text/plain' });
-				response.end('Internal Server Error');
+				atlaAS.end_('Internal Server Error');
 			});
 			return;
 		}
@@ -182,11 +183,11 @@ export class _FileServer {
 				content: JSON.stringify(err),
 			});
 			response.writeHead(500, { 'Content-Type': 'text/plain' });
-			response.end('Internal Server Error');
+			atlaAS.end_('Internal Server Error');
 		});
 
 		fileStream.on('end', () => {
-			response.end();
+			atlaAS.end_();
 		});
 	};
 	/**

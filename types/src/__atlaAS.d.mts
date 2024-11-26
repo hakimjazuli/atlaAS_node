@@ -48,7 +48,6 @@ export class __atlaAS {
      * @type {string}
      */
     app_root: string;
-    do_not_response_with_end: boolean;
     /**
      * @param {any} val
      */

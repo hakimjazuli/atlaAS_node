@@ -3,7 +3,6 @@
 import { __atlaAS } from './__atlaAS.mjs';
 import { _Routes } from './_Routes.mjs';
 import { __Settings } from './__Settings.mjs';
-import { fileURLToPath } from 'url';
 
 /**
  * @description
@@ -43,14 +42,15 @@ export class _FunctionHelpers {
 		if (ref) {
 			return _FunctionHelpers.resolve_dynamic_import(logged_path, ref);
 		}
+
 		const extention = __Settings.__._system_file;
 		path_ = `${path_}.${extention}`;
 		let result;
 		try {
-			result = await import(fileURLToPath(path_));
+			result = await import(path_);
 		} catch (_) {
 			try {
-				result = await import(fileURLToPath(`file://${path_}`));
+				result = await import(`file://${path_}`);
 			} catch (_) {
 				return null;
 			}

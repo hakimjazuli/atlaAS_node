@@ -8,6 +8,7 @@ import { __atlaAS } from './__atlaAS.mjs';
  */
 export function response_(response_instance) {
 	return Object.assign(response_instance, {
+		do_not_response_with_end: false,
 		atlaas_html() {
 			response_instance.setHeader('Content-Type', 'text/html; charset=UTF-8');
 			return response_instance;

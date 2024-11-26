@@ -131,7 +131,6 @@ export class fsRouter extends fsMiddleware {
 				return false;
 			}
 			if (await this.check_is_map_resources_or_mw_blocked(route, route_instance)) {
-				atlaas.do_not_response_with_end = true;
 				return true;
 			}
 			return await this.run_method_with_input_logic(route_instance);
@@ -151,7 +150,6 @@ export class fsRouter extends fsMiddleware {
 			return false;
 		}
 		const url_input = req.atlaas_uri_array.slice(this.routes_length);
-		const res = __atlaAS.__.response;
 		if (url_input.length === 0) {
 			if (
 				route_instance instanceof _RouteWithMapResourcesAndMiddleware &&

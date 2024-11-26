@@ -1,29 +1,50 @@
 # atlaAS_node
+
 an `FSRouting` for `nodeJS` and `bun`, ported the logic from [atlaAS](https://github.com/hakimjazuli/atlaAS)
+
 ## how to install
+
 ```shell
+
 npm i @html_first/atla-as_node
+
 ```
+
 ## how to initialize
+
 - initialize using [__atlaAS instance](#__atlaas)
+
 ## problem with porting
+
 php have wide range of built in connection class using `PDO` which also already highly used as the goto solution in php environtment:
+
 - however in `nodeJS`, there's high chances connection library will be different per project, therefore atlaAS `connection` and `querying` functionality WILL NOT be implemented in this `port`, as in EVER;
+
 ## recomendations
+
 you might need to install extentions/linters to help you with the `html` template literals
+
 - for vscode we found this either one of these helped a lot:
+
 > - [lit-html](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html)
+
 > - [vscode-template-literal-editor](https://marketplace.visualstudio.com/items?itemName=plievone.vscode-template-literal-editor)
+
 ## class_helper
+
 - any class prefixed with "_" are a helper class;
+
 - it contains methods or constructor to help you in common scenarios;
+
 ## singleton
+
 - any class prefixed with "__" are singleton, the instance can be accessed from `_Routes[anyMethods]` via class static property `ClassName.__`
+
 ## setting_class
+
 - extends the class and modify the property which are prefixed with "_" if neccessary
 
-
-<h2 id="exported-api-and-type-list">exported-api-and-type-list</h2>
+## exported-api-and-type-list
 
 - [html](#html)
 
@@ -32,8 +53,6 @@ you might need to install extentions/linters to help you with the `html` templat
 - [req](#req)
 
 - [res](#res)
-
-- [routeMethod](#routemethod)
 
 - [_AppRegex](#_appregex)
 
@@ -91,13 +110,6 @@ you might need to install extentions/linters to help you with the `html` templat
 <h2 id="res">res</h2>
 
 ```js/*** @returns {__atlaAS["response"]}* - current `atlaAS` `http.ServerResponse` instanse*/```- use this to get `returns value` outside `mw` `scope`;
-
-*) <sub>[go to exported list](#exported-api-and-type-list)</sub>
-
-
-<h2 id="routemethod">routeMethod</h2>
-
-type helper for routeMethod```js/** * @typedef {(mode:mwInputs.mw_chain_helper)=>Promise<boolean>} mwMethod * - returns true or awaited chains return value; * @typedef {(...uri_inputs:string[])=>Promise<string>} routeGetMethod * - each of uri_input must never have default value; * @typedef {(...uri_inputs:string[])=>Promise<void>} routeMethod * - each of uri_input must never have default value; */```
 
 *) <sub>[go to exported list](#exported-api-and-type-list)</sub>
 

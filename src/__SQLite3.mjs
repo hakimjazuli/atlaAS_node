@@ -367,8 +367,9 @@ export class __SQLite3 {
 		if (!this.is_valid_call('limit')) {
 			return;
 		}
-		const request = __atlaAS.__.request;
-		const response = __atlaAS.__.response;
+		const atlaas = __atlaAS.__;
+		const request = atlaas.request;
+		const response = atlaas.response;
 		client_id = client_id ?? request.socket.remoteAddress ?? request.headers['x-forwarded-for'];
 		const [db, dc] = this.db();
 		try {
@@ -395,7 +396,7 @@ export class __SQLite3 {
 					response.writeHead(429, {
 						'Content-Type': 'application/json',
 					});
-					__atlaAS.__.end_(
+					atlaas.end_(
 						JSON.stringify({
 							code: 429,
 							status: 'not-enough-resource',
@@ -451,7 +452,7 @@ export class __SQLite3 {
 			response.writeHead(500, {
 				'Content-Type': 'application/json',
 			});
-			response.end(
+			atlaas.end_(
 				JSON.stringify({
 					code: 500,
 					status: 'internal-server-error',
