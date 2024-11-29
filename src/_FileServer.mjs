@@ -14,29 +14,44 @@ import { _FunctionHelpers } from './_FunctionHelpers.mjs';
  */
 export class _FileServer {
 	/**
+	 * @private
+	 * @type {string|undefined}
+	 */
+	static log_dir = undefined;
+	/**
 	 * @param {Object} options
 	 * @param {string} options.prefix
-	 * @param {string} options.content
+	 * @param {Object} options.content
 	 * @return {string}
 	 */
-	static log_to_file = ({ prefix, content }) => {
+	static log = ({ prefix, content }) => {
 		prefix = prefix
 			.replace(/[\/\\:*?"<>|]/g, '')
 			.replace(/\s+/g, '_')
 			.trim();
 		let log_dir = this.log_dir;
 		if (!log_dir) {
-			log_dir = this.log_dir = path_join(__atlaAS.__.app_root, 'logs');
+			log_dir = this.log_dir = path_join(
+				__atlaAS.__.app_root,
+				'logs',
+				__Settings.__._app_log
+			);
 		}
 		if (!existsSync(log_dir)) {
 			mkdirSync(log_dir, { recursive: true });
 		}
-		const log_path = path_join(
-			log_dir,
-			`${prefix}-${__Settings.__._app_log}-${Date.now()}.json`
-		);
-		writeFileSync(log_path, content);
-		console.log(`Log written to: ${log_path}`);
+		try {
+			content = JSON.stringify(content);
+		} catch (error) {
+			console.error({ ...error, message: 'unable to stringify' });
+		}
+		const log_path = path_join(log_dir, `${prefix}-${Date.now()}.json`);
+		try {
+			writeFileSync(log_path, content);
+			console.log(`Log written to: ${log_path}`);
+		} catch (error) {
+			console.error({ ...error, message: `unable to write file to:${log_path}` });
+		}
 		return log_path;
 	};
 	/**
@@ -55,7 +70,7 @@ export class _FileServer {
 				stack: error.stack,
 				path: absolute_path,
 			};
-			this.log_to_file({
+			this.log({
 				prefix: 'read-file-error',
 				content: JSON.stringify(errorDetails, null, 2),
 			});
@@ -164,7 +179,7 @@ export class _FileServer {
 
 			fileStream.pipe(response);
 			fileStream.on('error', (err) => {
-				this.log_to_file({
+				this.log({
 					prefix: 'file-stream-error',
 					content: JSON.stringify(err),
 				});
@@ -178,7 +193,7 @@ export class _FileServer {
 		content_type && response.setHeader('Content-Type', content_type);
 		fileStream.pipe(response);
 		fileStream.on('error', (err) => {
-			this.log_to_file({
+			this.log({
 				prefix: 'file-stream-error',
 				content: JSON.stringify(err),
 			});
@@ -222,7 +237,7 @@ export class _FileServer {
 		try {
 			file_size = statSync(filename).size;
 		} catch (err) {
-			this.log_to_file({
+			this.log({
 				prefix: 'error-reading-file',
 				content: JSON.stringify(err),
 			});

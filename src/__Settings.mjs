@@ -30,10 +30,6 @@ export class __Settings {
 	_app_log = 'atla-as-log';
 
 	/**
-	 * @type {string|undefined}
-	 */
-	log_dir = undefined;
-	/**
 	 * @type {string}
 	 */
 	route_mw_ext;

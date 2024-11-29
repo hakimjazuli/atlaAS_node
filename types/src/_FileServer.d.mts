@@ -5,14 +5,19 @@
  */
 export class _FileServer {
     /**
+     * @private
+     * @type {string|undefined}
+     */
+    private static log_dir;
+    /**
      * @param {Object} options
      * @param {string} options.prefix
-     * @param {string} options.content
+     * @param {Object} options.content
      * @return {string}
      */
-    static log_to_file: ({ prefix, content }: {
+    static log: ({ prefix, content }: {
         prefix: string;
-        content: string;
+        content: any;
     }) => string;
     /**
      * @param {string} absolute_path

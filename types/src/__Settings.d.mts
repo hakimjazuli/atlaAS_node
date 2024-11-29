@@ -22,10 +22,6 @@ export class __Settings {
     _use_stream: boolean;
     _app_log: string;
     /**
-     * @type {string|undefined}
-     */
-    log_dir: string | undefined;
-    /**
      * @type {string}
      */
     route_mw_ext: string;

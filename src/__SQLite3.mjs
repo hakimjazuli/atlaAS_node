@@ -41,20 +41,6 @@ export class __SQLite3 {
 	 */
 	static __;
 	/**
-	 * @param {string} path_
-	 * @returns {string}
-	 */
-	sql_file = (path_) => {
-		path_ = path_join(__atlaAS.__.app_root, path_);
-		if (path_ in this.cached_sql_file) {
-			return this.cached_sql_file[path_];
-		}
-		const sql_content = (this.cached_sql_file[path_] = _FileServer.get_string(
-			path_join(__atlaAS.__.app_root, path_)
-		));
-		return sql_content;
-	};
-	/**
 	 * @private
 	 * @type {{
 	 * [path_:string]:string
@@ -66,7 +52,7 @@ export class __SQLite3 {
 	 * @param {string} path_
 	 * @returns {string}
 	 */
-	node_module_sql = (path_) => {
+	sql_file = (path_) => {
 		path_ = path_join(__Settings.__.resolved_path, path_);
 		if (path_ in this.cached_sql_file) {
 			return this.cached_sql_file[path_];
@@ -129,17 +115,13 @@ export class __SQLite3 {
 		const archived_path = path_join(dir, `${baseName}.${Date.now()}${ext}.archived_db`);
 		const [db, dc] = this.db();
 		db.serialize(() => {
-			db.run(
-				this.node_module_sql('archive.sql'),
-				{ ':archived_path': archived_path },
-				(err) => {
-					if (err) {
-						console.error('Error archiving the database:', err);
-					} else {
-						console.log('Database successfully archived:', archived_path);
-					}
+			db.run(this.sql_file('archive.sql'), { ':archived_path': archived_path }, (err) => {
+				if (err) {
+					console.error('Error archiving the database:', err);
+				} else {
+					console.log('Database successfully archived:', archived_path);
 				}
-			);
+			});
 		});
 		dc((error) => {
 			if (error) {
@@ -155,7 +137,7 @@ export class __SQLite3 {
 				const [_, new_dC] = this.db();
 				new_dC();
 			} catch (error) {
-				const log_path = _FileServer.log_to_file({
+				const log_path = _FileServer.log({
 					prefix: 'archive-error',
 					content: JSON.stringify({ ...error }),
 				});
@@ -192,39 +174,36 @@ export class __SQLite3 {
 		}
 		return new Promise((resolve, reject) => {
 			const [db, dc] = this.db();
-			db.run(this.node_module_sql('log_tbl_create.sql'), (err) => {
+			db.run(this.sql_file('log_tbl_create.sql'), (err) => {
 				if (err) {
 					reject(err);
 					return;
 				}
-				db.run(
-					this.node_module_sql('log_invalid_delete.sql'),
-					{ ':date': Date.now() },
-					(err) => {
-						if (err) {
-							reject(err);
-							return;
-						}
-						db.run(
-							this.node_module_sql('log_insert.sql'),
-							{
-								':context': context,
-								':time_stamp': Date.now(),
-								':valid_until': Date.now() + this._log_db_valid_length,
-								':message': message,
-							},
-							(err) => {
-								if (err) {
-									reject(err);
-									return;
-								}
-								resolve(true);
-								dc();
+				const now = Date.now();
+				db.run(this.sql_file('log_invalid_delete.sql'), { ':date': now }, (err) => {
+					if (err) {
+						reject(err);
+						return;
+					}
+					db.run(
+						this.sql_file('log_insert.sql'),
+						{
+							':context': context,
+							':time_stamp': now,
+							':valid_until': now + this._log_db_valid_length,
+							':message': message,
+						},
+						(err) => {
+							if (err) {
+								reject(err);
 								return;
 							}
-						);
-					}
-				);
+							resolve(true);
+							dc();
+							return;
+						}
+					);
+				});
 			});
 		});
 	};
@@ -237,7 +216,7 @@ export class __SQLite3 {
 		}
 		return new Promise((resolve, reject) => {
 			const [db, dc] = this.db();
-			db.run(this.node_module_sql('sessions_tbl_create.sql'), (err) => {
+			db.run(this.sql_file('sessions_tbl_create.sql'), (err) => {
 				if (err) {
 					reject(err);
 					return;
@@ -247,28 +226,28 @@ export class __SQLite3 {
 					req.headers.cookie?.split('=')[1] ?? randomBytes(16).toString('hex');
 				this.session_valid_until = Date.now() + this._session_timeout;
 				db.run(
-					this.node_module_sql('sessions_delete_invalid.sql'),
+					this.sql_file('sessions_delete_invalid.sql'),
 					{ ':date': Date.now() },
 					(err) => {
 						if (err) {
 							if (!__Env.__._in_production) {
 								console.error(err);
 							}
-							_FileServer.log_to_file({
+							_FileServer.log({
 								prefix: 'error-deleting-expired-sessions',
-								content: JSON.stringify(err),
+								content: err,
 							});
 							reject(err);
 							return;
 						}
 						db.get(
-							this.node_module_sql('session_id_get.sql'),
+							this.sql_file('session_id_get.sql'),
 							{ ':session_id': this.session_id },
 							(err, row) => {
 								if (err) {
-									_FileServer.log_to_file({
+									_FileServer.log({
 										prefix: 'error-selecting-session-id',
-										content: JSON.stringify(err),
+										content: err,
 									});
 									reject(err);
 									return;
@@ -305,13 +284,13 @@ export class __SQLite3 {
 		return new Promise((resolve, reject) => {
 			const [db, dc] = this.db();
 			db.run(
-				this.node_module_sql('session_id_delete.sql'),
+				this.sql_file('session_id_delete.sql'),
 				{ ':session_id': this.session_id },
 				(err) => {
 					if (err) {
-						_FileServer.log_to_file({
+						_FileServer.log({
 							prefix: 'error-deleting-session-id',
-							content: JSON.stringify(err),
+							content: err,
 						});
 						reject(err);
 						return;
@@ -335,7 +314,7 @@ export class __SQLite3 {
 		return new Promise((resolve, reject) => {
 			const [db, dc] = this.db();
 			db.run(
-				this.node_module_sql('session_insert.sql'),
+				this.sql_file('session_insert.sql'),
 				{
 					':session_id': this.session_id,
 					':valid_until': this.session_valid_until,
@@ -343,9 +322,9 @@ export class __SQLite3 {
 				},
 				(err) => {
 					if (err) {
-						_FileServer.log_to_file({
+						_FileServer.log({
 							prefix: 'error-saving-sessions',
-							content: JSON.stringify(err),
+							content: err,
 						});
 						reject(err);
 						return;
@@ -374,7 +353,7 @@ export class __SQLite3 {
 		const [db, dc] = this.db();
 		try {
 			await new Promise((resolve, reject) => {
-				db.run(this.node_module_sql('rate_limits_tbl_create.sql'), (err) => {
+				db.run(this.sql_file('rate_limits_tbl_create.sql'), (err) => {
 					if (err) reject(err);
 					else resolve();
 				});
@@ -383,7 +362,7 @@ export class __SQLite3 {
 			const window_start = Math.floor(currentTime / time_window) * time_window;
 			const row = await new Promise((resolve, reject) => {
 				db.get(
-					this.node_module_sql('rate_limites_row_get.sql'),
+					this.sql_file('rate_limites_row_get.sql'),
 					{ ':client_id': client_id, ':window_start': window_start },
 					(err, row) => {
 						if (err) reject(err);
@@ -407,7 +386,7 @@ export class __SQLite3 {
 				}
 				await new Promise((resolve, reject) => {
 					db.run(
-						this.node_module_sql('rate_limits_delete_client_id.sql'),
+						this.sql_file('rate_limits_delete_client_id.sql'),
 						{ ':client_id': client_id, ':window_start': window_start },
 						(err) => {
 							if (err) reject(err);
@@ -417,7 +396,7 @@ export class __SQLite3 {
 				});
 				await new Promise((resolve, reject) => {
 					db.run(
-						this.node_module_sql('rate_limites_updates.sql'),
+						this.sql_file('rate_limites_updates.sql'),
 						{ ':client_id': client_id, ':window_start': window_start },
 						(err) => {
 							if (err) reject(err);
@@ -429,7 +408,7 @@ export class __SQLite3 {
 			}
 			await new Promise((resolve, reject) => {
 				db.run(
-					this.node_module_sql('rate_limits_insert.sql'),
+					this.sql_file('rate_limits_insert.sql'),
 					{
 						':client_id': client_id,
 						':window_start': window_start,
@@ -445,9 +424,9 @@ export class __SQLite3 {
 			if (!__Env.__._in_production) {
 				console.error(err);
 			}
-			_FileServer.log_to_file({
+			_FileServer.log({
 				prefix: 'error-rate-limiting',
-				content: JSON.stringify(err),
+				content: err,
 			});
 			response.writeHead(500, {
 				'Content-Type': 'application/json',

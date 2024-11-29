@@ -1,7 +1,5 @@
 // @ts-check
 
-import { mwInputs } from './mwInputs.export.mjs';
-
 /**
  * @description
  * type helper for routeMethod

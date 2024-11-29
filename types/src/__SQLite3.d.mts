@@ -39,11 +39,6 @@ export class __SQLite3 {
      */
     _log_db_valid_length: number;
     /**
-     * @param {string} path_
-     * @returns {string}
-     */
-    sql_file: (path_: string) => string;
-    /**
      * @private
      * @type {{
      * [path_:string]:string
@@ -55,7 +50,7 @@ export class __SQLite3 {
      * @param {string} path_
      * @returns {string}
      */
-    private node_module_sql;
+    private sql_file;
     /**
      * @type {()=>[sqlite3.Database,disconnect:(errorCheck?:(err:Error|null)=>void)=>void]}
      */
